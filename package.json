@@ -1,6 +1,6 @@
 {
-  "name": "cosmotech-viz-plugins",
-  "version": "1.0.0",
+  "name": "@cosmotech/cosmotech-viz-plugins",
+  "version": "0.0.1",
   "description": "Monorepo de plugins de visualisation custom pour Apache Superset",
   "private": true,
   "workspaces": [
@@ -60,5 +60,24 @@
   "engines": {
     "node": ">=18",
     "yarn": ">=1.22"
-  }
+  },
+  "main": "babel.config.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cosmo-Tech/cosmotech-viz-plugins.git"
+  },
+  "keywords": [
+    "superset",
+    "plugins",
+    "charts"
+  ],
+  "author": "jreynard-code",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Cosmo-Tech/cosmotech-viz-plugins/issues"
+  },
+  "homepage": "https://github.com/Cosmo-Tech/cosmotech-viz-plugins#readme"
 }

@@ -1,0 +1,23 @@
+# Source — compiled output in dist/ and esm/ is sufficient
+src/
+test/
+types/
+
+# TypeScript config and build info
+tsconfig.json
+tsconfig.esm.json
+*.tsbuildinfo
+
+# Transpilation
+babel.config.js
+
+# Testing
+jest.config.js
+coverage/
+
+# Tooling
+.eslintcache
+.gitignore
+
+# Note: "files": ["dist", "esm"] in package.json already whitelists the publish content.
+# This file provides an explicit deny-list as an additional safety layer.
