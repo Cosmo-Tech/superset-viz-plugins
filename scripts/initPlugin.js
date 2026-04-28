@@ -51,34 +51,40 @@ function* walkDir(dir, root) {
 }
 
 /**
- * Reads all of stdin and returns an array of non-empty trimmed lines.
+ * Creates a prompt function backed by a single readline interface.
+ * Works correctly with both interactive TTY and piped input:
+ * - TTY: lines arrive one by one as the user types → resolved by pendingResolvers
+ * - Pipe: lines may arrive before questions are asked → buffered in lineBuffer
  */
-async function readStdinLines() {
-  const chunks = [];
-  for await (const chunk of process.stdin) {
-    chunks.push(chunk);
-  }
-  return Buffer.concat(chunks)
-    .toString('utf8')
-    .split('\n')
-    .map(l => l.trim())
-    .filter(l => l.length > 0);
-}
-
-/**
- * Prompts the user interactively (TTY) or reads from pre-collected stdin lines.
- */
-async function prompt(question, lines, index) {
-  if (lines !== null) {
-    const answer = lines[index] || '';
-    process.stdout.write(`${question}${answer}\n`);
-    return answer;
-  }
-  return new Promise(resolve => {
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: false });
-    process.stdout.write(question);
-    rl.once('line', line => { rl.close(); resolve(line.trim()); });
+function createPrompter() {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    terminal: !!process.stdin.isTTY,
   });
+  const lineBuffer = [];
+  const pendingResolvers = [];
+
+  rl.on('line', line => {
+    const trimmed = line.trim();
+    if (pendingResolvers.length > 0) {
+      pendingResolvers.shift()(trimmed);
+    } else {
+      lineBuffer.push(trimmed);
+    }
+  });
+
+  function ask(question) {
+    process.stdout.write(question);
+    if (lineBuffer.length > 0) {
+      return Promise.resolve(lineBuffer.shift());
+    }
+    return new Promise(resolve => pendingResolvers.push(resolve));
+  }
+
+  function close() { rl.close(); }
+
+  return { ask, close };
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -86,23 +92,23 @@ async function prompt(question, lines, index) {
 // ──────────────────────────────────────────────────────────────────────────────
 
 async function main() {
-  // If stdin is a pipe, read all lines up-front so readline doesn't miss them
-  const isTTY = process.stdin.isTTY;
-  const lines = isTTY ? null : await readStdinLines();
+  const { ask, close } = createPrompter();
 
   // Collect inputs
-  const packageName = await prompt('Plugin name (kebab-case, e.g. my-chart): ', lines, 0);
+  const packageName = await ask('Plugin name (kebab-case, e.g. my-chart): ');
 
   if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(packageName)) {
     console.error(
       `\nError: "${packageName}" is not valid kebab-case.\n` +
-      'Use lowercase letters, digits, and hyphens only (e.g. my-chart).\n'
+      'Use lowercase letters, digits, and hyphens only (e.g. my-chart or mychartname).\n'
     );
+    close();
     process.exit(1);
   }
 
-  const displayName = await prompt('Display name (e.g. My Chart): ', lines, 1);
-  const description = await prompt('Description: ', lines, 2);
+  const displayName = await ask('Display name (e.g. My Chart): ');
+  const description = await ask('Description: ');
+  close();
 
   const className = toPascalCase(packageName);
 
