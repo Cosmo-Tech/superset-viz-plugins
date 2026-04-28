@@ -1,0 +1,38 @@
+{
+  "name": "@cosmotech-viz/plugin-hello-world",
+  "version": "0.1.0",
+  "description": "Simple Plugin that display \"Hello World\"",
+  "pluginName": "HelloWorld",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "module": "esm/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "esm"],
+  "private": true,
+  "scripts": {
+    "build": "babel src --extensions '.ts,.tsx' --copy-files --out-dir dist && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
+    "build:dev": "tsc -p tsconfig.json --watch",
+    "clean": "rm -rf dist esm coverage",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "author": "My Name",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@superset-ui/chart-controls": "^0.20.3",
+    "@superset-ui/core": "^0.20.4",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "devDependencies": {
+    "@superset-ui/chart-controls": "^0.20.3",
+    "@superset-ui/core": "^0.20.4",
+    "@types/jest": "^29.5.12",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3"
+  }
+}

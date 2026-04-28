@@ -1,0 +1,25 @@
+{
+  "name": "@cosmotech-viz/core",
+  "version": "0.1.0",
+  "description": "Shared components and utilities for cosmotech-viz Superset plugins",
+  "main": "dist/index.js",
+  "module": "esm/index.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
+    "build:dev": "tsc -p tsconfig.json --watch",
+    "clean": "rm -rf dist esm coverage",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "peerDependencies": {
+    "@superset-ui/core": "*",
+    "react": ">=16.13.1",
+    "react-dom": ">=16.13.1"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}
