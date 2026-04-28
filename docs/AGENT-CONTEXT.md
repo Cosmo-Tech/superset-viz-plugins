@@ -93,17 +93,17 @@ cosmotech-viz-plugins/
 
 ## Available scripts (root)
 
-| Script              | Command                             | Purpose                                             |
-| ------------------- | ----------------------------------- | --------------------------------------------------- |
-| `yarn plugin:init`  | `node scripts/initPlugin.js`        | Scaffold a new plugin from `plugin_template/`       |
-| `yarn build`        | `lerna run build`                   | Production build (CJS + ESM) for all packages       |
-| `yarn build:dev`    | `lerna run build:dev`               | Watch mode via `tsc --watch`                        |
-| `yarn test`         | `lerna run test`                    | Jest across all packages                            |
-| `yarn test:watch`   | `lerna run test:watch`              | Jest watch mode                                     |
-| `yarn lint`         | `lerna run lint`                    | ESLint on all `src/` directories                    |
-| `yarn format`       | `prettier --write`                  | Auto-format all `.ts/.tsx/.js/.json/.md` files      |
-| `yarn format:check` | `prettier --check`                  | CI formatting check (fails if unformatted)          |
-| `yarn clean`        | `lerna run clean`                   | Delete `dist/`, `esm/`, `coverage/` in all packages |
+| Script              | Command                      | Purpose                                             |
+| ------------------- | ---------------------------- | --------------------------------------------------- |
+| `yarn plugin:init`  | `node scripts/initPlugin.js` | Scaffold a new plugin from `plugin_template/`       |
+| `yarn build`        | `lerna run build`            | Production build (CJS + ESM) for all packages       |
+| `yarn build:dev`    | `lerna run build:dev`        | Watch mode via `tsc --watch`                        |
+| `yarn test`         | `lerna run test`             | Jest across all packages                            |
+| `yarn test:watch`   | `lerna run test:watch`       | Jest watch mode                                     |
+| `yarn lint`         | `lerna run lint`             | ESLint on all `src/` directories                    |
+| `yarn format`       | `prettier --write`           | Auto-format all `.ts/.tsx/.js/.json/.md` files      |
+| `yarn format:check` | `prettier --check`           | CI formatting check (fails if unformatted)          |
+| `yarn clean`        | `lerna run clean`            | Delete `dist/`, `esm/`, `coverage/` in all packages |
 
 ---
 
@@ -121,12 +121,12 @@ printf 'my-chart\nMy Chart\nA description\n' | yarn plugin:init
 
 ### Token map
 
-| Token                       | Value                            | Example               |
-| --------------------------- | -------------------------------- | --------------------- |
-| `{{PACKAGE_NAME}}`          | kebab-case plugin name           | `my-chart`            |
-| `{{PLUGIN_CLASS_NAME}}`     | PascalCase derived from name     | `MyChart`             |
-| `{{PLUGIN_DISPLAY_NAME}}`   | Human-readable name              | `My Chart`            |
-| `{{DESCRIPTION}}`           | Short description                | `A description`       |
+| Token                     | Value                        | Example         |
+| ------------------------- | ---------------------------- | --------------- |
+| `{{PACKAGE_NAME}}`        | kebab-case plugin name       | `my-chart`      |
+| `{{PLUGIN_CLASS_NAME}}`   | PascalCase derived from name | `MyChart`       |
+| `{{PLUGIN_DISPLAY_NAME}}` | Human-readable name          | `My Chart`      |
+| `{{DESCRIPTION}}`         | Short description            | `A description` |
 
 Tokens are replaced in **all text files**. The placeholder filename `__PLUGIN_CLASS_NAME__.tsx`
 is also renamed to `<ClassName>.tsx`.
@@ -189,6 +189,7 @@ yarn workspace @cosmotech-viz/plugin-<name> test
 > TypeScript 5.9 enforces strict coupling between `module` and `moduleResolution`. The root
 > tsconfig uses `moduleResolution: "bundler"` + `module: "ESNext"`. Generating CommonJS JS with
 > `tsc` from this config is invalid. Therefore:
+>
 > - **Babel** compiles `src/` → `dist/` (CommonJS JS files, no type checking)
 > - **`tsc -p tsconfig.json`** runs with `emitDeclarationOnly: true` — generates only `.d.ts` files in `dist/` (no JS)
 > - **`tsc -p tsconfig.esm.json`** generates ESM JS in `esm/` (valid because module=ESNext matches moduleResolution=bundler)
@@ -265,16 +266,51 @@ module.exports = {
 const supersetTheme = { colors: { primary: { base: '#20A7C9' } }, gridUnit: 4, borderRadius: 4 };
 const t = (str) => str;
 class ChartProps {
-  constructor(props = {}) { Object.assign(this, { formData: {}, queriesData: [], width: 800, height: 600, ...props }); }
+  constructor(props = {}) {
+    Object.assign(this, { formData: {}, queriesData: [], width: 800, height: 600, ...props });
+  }
 }
-class ChartMetadata { constructor(p = {}) { Object.assign(this, p); } }
-class ChartPlugin { constructor(p = {}) { Object.assign(this, p); } register() { return this; } }
+class ChartMetadata {
+  constructor(p = {}) {
+    Object.assign(this, p);
+  }
+}
+class ChartPlugin {
+  constructor(p = {}) {
+    Object.assign(this, p);
+  }
+  register() {
+    return this;
+  }
+}
 const buildQueryContext = (formData, buildQuery) => {
-  const base = { time_range: 'No filter', filters: [], extras: {}, metrics: [], columns: [], groupby: [], row_limit: 10000 };
-  return { datasource: { id: '1', type: 'table' }, force: false, queries: buildQuery ? buildQuery(base) : [base], result_format: 'json', result_type: 'full' };
+  const base = {
+    time_range: 'No filter',
+    filters: [],
+    extras: {},
+    metrics: [],
+    columns: [],
+    groupby: [],
+    row_limit: 10000,
+  };
+  return {
+    datasource: { id: '1', type: 'table' },
+    force: false,
+    queries: buildQuery ? buildQuery(base) : [base],
+    result_format: 'json',
+    result_type: 'full',
+  };
 };
 const validateNonEmpty = (v) => (v == null || v === '' ? 'cannot be empty' : undefined);
-module.exports = { t, supersetTheme, ChartProps, ChartMetadata, ChartPlugin, buildQueryContext, validateNonEmpty };
+module.exports = {
+  t,
+  supersetTheme,
+  ChartProps,
+  ChartMetadata,
+  ChartPlugin,
+  buildQueryContext,
+  validateNonEmpty,
+};
 ```
 
 ---
@@ -301,7 +337,7 @@ export default class MyChartPlugin extends ChartPlugin {
     super({
       buildQuery,
       controlPanel,
-      loadChart: () => import('../MyChart'),  // dynamic import for code-splitting
+      loadChart: () => import('../MyChart'), // dynamic import for code-splitting
       metadata: new ChartMetadata({
         description: 'My chart description',
         name: 'My Chart',
@@ -363,28 +399,33 @@ export default controlPanel;
 ## Key constraints and known issues
 
 ### @superset-ui package versions (CRITICAL)
+
 - `@superset-ui/core@2.1.0` and `@superset-ui/chart-controls@2.1.0` are **broken on npm** — published without build artifacts (no `lib/`, no `.d.ts`). They will cause `Cannot find module` errors immediately.
 - **Always use `@superset-ui/core@0.20.4` and `@superset-ui/chart-controls@0.20.3`**.
 - `@superset-ui/core@0.20.4` has several undeclared dependencies. The root `package.json` adds them explicitly: `json-bigint`, `tinycolor2`, `react-loadable`, `memoize-one`.
 - `@superset-ui/core@0.20.4` ships ESM syntax in its `lib/*.js` files (the `main` field), despite being in `lib/` (conventionally CJS). This breaks Jest without transformation.
 
 ### TypeScript 5.9 module resolution (CRITICAL)
+
 - TS 5.9 enforces strict coupling: `moduleResolution: "bundler"` requires `module: "ESNext"` or `"preserve"`. Using `module: "CommonJS"` with `moduleResolution: "bundler"` is a compilation error.
 - Root `tsconfig.json` uses `module: "ESNext"` + `moduleResolution: "bundler"` (valid pair).
 - Plugins use `emitDeclarationOnly: true` in their `tsconfig.json` to avoid the CommonJS/bundler conflict — tsc only emits `.d.ts`, not JS. Babel handles JS output.
 - `packages/core` can use `module: "CommonJS"` override because its `src/index.ts` has no actual imports (only `export {}`), which avoids the conflict check.
 
 ### Jest and ESM dependencies
+
 - `transformIgnorePatterns: ['/node_modules/']` ignores ALL node_modules (default behavior).
 - `@superset-ui/core` and `@superset-ui/chart-controls` are mocked via `moduleNameMapper` to avoid their ESM dependency chain entirely.
 - The leading `/` in `/node_modules/` is essential — without it, the regex can fail to match nested `node_modules` paths (e.g. `d3-scale/node_modules/d3-time-format`).
 - If you add a new dependency that is ESM-only, either mock it or add it to the transform whitelist (see `transformIgnorePatterns` in Jest docs).
 
 ### Lerna v9
+
 - `lerna.json` must NOT contain `"useWorkspaces": true` — this key was removed in Lerna v9 and throws a runtime error.
 - Yarn workspaces are declared in root `package.json` `"workspaces"` field; Lerna reads `"packages"` in `lerna.json` for its own discovery.
 
 ### General
+
 - `declarationMap: false` must be explicit in `tsconfig.esm.json` because the root tsconfig enables it, and it conflicts with `declaration: false`.
 - Jest transforms use `rootMode: "upward"` so each package's Jest can locate the root `babel.config.js`.
 - `scripts/` JS files are excluded from ESLint (`"ignorePatterns": ["scripts/"]`) and from TypeScript compilation.

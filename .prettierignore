@@ -3,3 +3,8 @@ dist
 esm
 coverage
 *.lock
+
+# Template source files contain {{TOKEN}} syntax that Prettier cannot parse
+plugin_template/src
+plugin_template/test
+plugin_template/types

@@ -34,7 +34,7 @@ import { buildQueryContext, QueryFormData } from '@superset-ui/core';
  */
 export default function buildQuery(formData: QueryFormData) {
   const { series } = formData;
-  return buildQueryContext(formData, baseQueryObject => [
+  return buildQueryContext(formData, (baseQueryObject) => [
     {
       ...baseQueryObject,
       columns: series ? [series] : [],

@@ -7,7 +7,10 @@
   "main": "dist/index.js",
   "module": "esm/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "esm"],
+  "files": [
+    "dist",
+    "esm"
+  ],
   "private": true,
   "scripts": {
     "build": "babel src --extensions '.ts,.tsx' --copy-files --out-dir dist && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",

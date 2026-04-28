@@ -35,17 +35,17 @@ cosmotech-viz-plugins/
 
 ## Stack technique
 
-| Outil                           | Version               | Rôle                                                           |
-| ------------------------------- | --------------------- | -------------------------------------------------------------- |
-| **TypeScript**                  | 5.9.x                 | Langage principal de tous les plugins                          |
-| **React 19**                    | 19.x                  | Framework UI des composants de visualisation                   |
-| **recharts**                    | 2.x                   | Bibliothèque de graphiques SVG basée sur React                 |
-| **@superset-ui/core**           | 0.20.4                | Types et utilitaires du SDK Superset                           |
-| **@superset-ui/chart-controls** | 0.20.3                | Construction du panneau de contrôle Superset                   |
-| **Lerna v9**                    | 9.x                   | Orchestration du monorepo (scripts, versions, publication npm) |
-| **Babel**                       | 7.x                   | Transpilation TypeScript/TSX → JavaScript CommonJS             |
-| **Jest + @testing-library**     | 29.x / 16.x           | Tests unitaires                                                |
-| **ESLint + Prettier**           | 8.x / 3.x             | Lint et formatage du code                                      |
+| Outil                           | Version     | Rôle                                                           |
+| ------------------------------- | ----------- | -------------------------------------------------------------- |
+| **TypeScript**                  | 5.9.x       | Langage principal de tous les plugins                          |
+| **React 19**                    | 19.x        | Framework UI des composants de visualisation                   |
+| **recharts**                    | 2.x         | Bibliothèque de graphiques SVG basée sur React                 |
+| **@superset-ui/core**           | 0.20.4      | Types et utilitaires du SDK Superset                           |
+| **@superset-ui/chart-controls** | 0.20.3      | Construction du panneau de contrôle Superset                   |
+| **Lerna v9**                    | 9.x         | Orchestration du monorepo (scripts, versions, publication npm) |
+| **Babel**                       | 7.x         | Transpilation TypeScript/TSX → JavaScript CommonJS             |
+| **Jest + @testing-library**     | 29.x / 16.x | Tests unitaires                                                |
+| **ESLint + Prettier**           | 8.x / 3.x   | Lint et formatage du code                                      |
 
 ---
 

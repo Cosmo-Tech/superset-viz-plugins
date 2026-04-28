@@ -5,7 +5,16 @@ const supersetTheme = {
   colors: {
     primary: { base: '#20A7C9' },
     secondary: { base: '#444E7C' },
-    grayscale: { base: '#666666', dark1: '#323232', dark2: '#000000', light1: '#B2B2B2', light2: '#F0F0F0', light3: '#F7F7F7', light4: '#F9F9F9', light5: '#FAFAFA' },
+    grayscale: {
+      base: '#666666',
+      dark1: '#323232',
+      dark2: '#000000',
+      light1: '#B2B2B2',
+      light2: '#F0F0F0',
+      light3: '#F7F7F7',
+      light4: '#F9F9F9',
+      light5: '#FAFAFA',
+    },
     error: { base: '#E04355' },
     warning: { base: '#FF7F44' },
     alert: { base: '#FCC700' },
@@ -47,8 +56,12 @@ class ChartPlugin {
   constructor(props = {}) {
     Object.assign(this, props);
   }
-  register() { return this; }
-  unregister() { return this; }
+  register() {
+    return this;
+  }
+  unregister() {
+    return this;
+  }
 }
 
 const buildQueryContext = (formData, buildQuery) => {
@@ -65,7 +78,10 @@ const buildQueryContext = (formData, buildQuery) => {
   };
   const queries = buildQuery ? buildQuery(baseQueryObject) : [baseQueryObject];
   return {
-    datasource: { id: formData.datasource?.split('__')[0] || '1', type: formData.datasource?.split('__')[1] || 'table' },
+    datasource: {
+      id: formData.datasource?.split('__')[0] || '1',
+      type: formData.datasource?.split('__')[1] || 'table',
+    },
     force: false,
     queries,
     result_format: 'json',

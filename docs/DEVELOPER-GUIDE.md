@@ -78,17 +78,17 @@ cosmotech-viz-plugins/
 
 Toutes les commandes s'exécutent depuis la racine du monorepo.
 
-| Commande            | Description                                                  |
-| ------------------- | ------------------------------------------------------------ |
-| `yarn plugin:init`  | Scaffold un nouveau plugin depuis `plugin_template/`         |
-| `yarn build`        | Build production de tous les packages (CJS + ESM)            |
-| `yarn build:dev`    | Watch mode — recompile à chaque modification                 |
-| `yarn test`         | Lance tous les tests unitaires                               |
-| `yarn test:watch`   | Tests en mode watch                                          |
-| `yarn lint`         | Analyse ESLint sur tous les packages                         |
-| `yarn format`       | Formate tous les fichiers avec Prettier                      |
-| `yarn format:check` | Vérifie le formatage sans modifier (utilisé en CI)           |
-| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/`           |
+| Commande            | Description                                          |
+| ------------------- | ---------------------------------------------------- |
+| `yarn plugin:init`  | Scaffold un nouveau plugin depuis `plugin_template/` |
+| `yarn build`        | Build production de tous les packages (CJS + ESM)    |
+| `yarn build:dev`    | Watch mode — recompile à chaque modification         |
+| `yarn test`         | Lance tous les tests unitaires                       |
+| `yarn test:watch`   | Tests en mode watch                                  |
+| `yarn lint`         | Analyse ESLint sur tous les packages                 |
+| `yarn format`       | Formate tous les fichiers avec Prettier              |
+| `yarn format:check` | Vérifie le formatage sans modifier (utilisé en CI)   |
+| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/`   |
 
 Pour cibler un seul package :
 
@@ -181,13 +181,13 @@ yarn build && yarn test && yarn lint
 
 Le code généré est fonctionnel dès la sortie du générateur. Les fichiers à adapter en priorité :
 
-| Fichier                       | Ce qu'il faut modifier                                              |
-| ----------------------------- | ------------------------------------------------------------------- |
-| `src/MonGraphique.tsx`        | Remplacer le rendu `<pre>` par la visualisation réelle              |
-| `src/types.ts`                | Adapter les interfaces `FormData` et `Props` aux données du plugin  |
-| `src/plugin/buildQuery.ts`    | Adapter les colonnes/métriques à requêter                           |
-| `src/plugin/controlPanel.ts`  | Ajouter/modifier les contrôles du panneau Superset                  |
-| `src/plugin/transformProps.ts`| Adapter la transformation réponse API → props React                 |
+| Fichier                        | Ce qu'il faut modifier                                             |
+| ------------------------------ | ------------------------------------------------------------------ |
+| `src/MonGraphique.tsx`         | Remplacer le rendu `<pre>` par la visualisation réelle             |
+| `src/types.ts`                 | Adapter les interfaces `FormData` et `Props` aux données du plugin |
+| `src/plugin/buildQuery.ts`     | Adapter les colonnes/métriques à requêter                          |
+| `src/plugin/controlPanel.ts`   | Ajouter/modifier les contrôles du panneau Superset                 |
+| `src/plugin/transformProps.ts` | Adapter la transformation réponse API → props React                |
 
 > **Important** : utiliser `@superset-ui/core@0.20.4` et `@superset-ui/chart-controls@0.20.3`.
 > Les versions `2.x` sont publiées sur npm sans artefacts de build — elles ne fonctionnent pas.
@@ -219,7 +219,7 @@ export default class MonGraphiquePlugin extends ChartPlugin {
     super({
       buildQuery,
       controlPanel,
-      loadChart: () => import('../MonGraphique'),  // chargement dynamique
+      loadChart: () => import('../MonGraphique'), // chargement dynamique
       metadata: new ChartMetadata({
         description: 'Visualisation personnalisée',
         name: 'Mon Graphique',
@@ -307,11 +307,11 @@ Le `tsconfig.json` racine est la base partagée. Chaque package l'étend avec
 
 **Stratégie de build pour les plugins** (TypeScript 5.9 impose une contrainte stricte) :
 
-| Fichier             | Rôle                                                           | Outil  |
-| ------------------- | -------------------------------------------------------------- | ------ |
-| `tsconfig.json`     | Génère les `.d.ts` dans `dist/` (`emitDeclarationOnly: true`)  | `tsc`  |
-| `tsconfig.esm.json` | Génère le JS ESM dans `esm/` (`module: ESNext`)               | `tsc`  |
-| `babel.config.js`   | Génère le JS CommonJS dans `dist/` (sans contrôle de type)     | Babel  |
+| Fichier             | Rôle                                                          | Outil |
+| ------------------- | ------------------------------------------------------------- | ----- |
+| `tsconfig.json`     | Génère les `.d.ts` dans `dist/` (`emitDeclarationOnly: true`) | `tsc` |
+| `tsconfig.esm.json` | Génère le JS ESM dans `esm/` (`module: ESNext`)               | `tsc` |
+| `babel.config.js`   | Génère le JS CommonJS dans `dist/` (sans contrôle de type)    | Babel |
 
 > TypeScript 5.9 interdit `module: CommonJS` avec `moduleResolution: bundler`. Le root
 > tsconfig utilise `moduleResolution: bundler` + `module: ESNext`. Pour éviter le conflit,

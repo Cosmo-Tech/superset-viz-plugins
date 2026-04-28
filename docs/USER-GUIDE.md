@@ -16,9 +16,9 @@ mécanisme standard de plugins de visualisation.
 Les plugins sont publiés sur npm sous le scope `@cosmotech-viz/`. Chaque plugin dans le dossier
 `plugins/` correspond à un package npm indépendant.
 
-| Plugin                                      | Package npm                               | Description                       |
-| ------------------------------------------- | ----------------------------------------- | --------------------------------- |
-| **Hello World** (`plugins/hello-world/`)    | `@cosmotech-viz/plugin-hello-world`       | Plugin démonstratif — point de départ pour créer de nouveaux plugins |
+| Plugin                                   | Package npm                         | Description                                                          |
+| ---------------------------------------- | ----------------------------------- | -------------------------------------------------------------------- |
+| **Hello World** (`plugins/hello-world/`) | `@cosmotech-viz/plugin-hello-world` | Plugin démonstratif — point de départ pour créer de nouveaux plugins |
 
 > D'autres plugins seront ajoutés dans ce tableau au fur et à mesure des publications.
 

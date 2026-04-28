@@ -27,9 +27,18 @@ function toPascalCase(str) {
 }
 
 const BINARY_EXTENSIONS = new Set([
-  '.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico',
-  '.ttf', '.eot', '.woff', '.woff2',
-  '.pdf', '.zip',
+  '.png',
+  '.jpg',
+  '.jpeg',
+  '.gif',
+  '.svg',
+  '.ico',
+  '.ttf',
+  '.eot',
+  '.woff',
+  '.woff2',
+  '.pdf',
+  '.zip',
 ]);
 
 function isBinary(filePath) {
@@ -65,7 +74,7 @@ function createPrompter() {
   const lineBuffer = [];
   const pendingResolvers = [];
 
-  rl.on('line', line => {
+  rl.on('line', (line) => {
     const trimmed = line.trim();
     if (pendingResolvers.length > 0) {
       pendingResolvers.shift()(trimmed);
@@ -79,10 +88,12 @@ function createPrompter() {
     if (lineBuffer.length > 0) {
       return Promise.resolve(lineBuffer.shift());
     }
-    return new Promise(resolve => pendingResolvers.push(resolve));
+    return new Promise((resolve) => pendingResolvers.push(resolve));
   }
 
-  function close() { rl.close(); }
+  function close() {
+    rl.close();
+  }
 
   return { ask, close };
 }
@@ -100,7 +111,7 @@ async function main() {
   if (!/^[a-z][a-z0-9]*(-[a-z0-9]+)*$/.test(packageName)) {
     console.error(
       `\nError: "${packageName}" is not valid kebab-case.\n` +
-      'Use lowercase letters, digits, and hyphens only (e.g. my-chart or mychartname).\n'
+        'Use lowercase letters, digits, and hyphens only (e.g. my-chart or mychartname).\n',
     );
     close();
     process.exit(1);
@@ -124,7 +135,7 @@ async function main() {
   if (fs.existsSync(targetDir)) {
     console.error(
       `\nError: Plugin directory already exists: ${targetDir}\n` +
-      'Choose a different name or remove the existing directory first.\n'
+        'Choose a different name or remove the existing directory first.\n',
     );
     process.exit(1);
   }
@@ -175,7 +186,7 @@ Next steps:
 `);
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('\nUnexpected error:', err.message);
   process.exit(1);
 });

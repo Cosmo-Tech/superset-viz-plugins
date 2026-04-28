@@ -38,10 +38,8 @@ const Styles = styled.div<HelloWorldStylesProps>`
     /* You can use your props to control CSS! */
     margin-top: 0;
     margin-bottom: ${({ theme }) => theme.gridUnit * 3}px;
-    font-size: ${({ theme, headerFontSize }) =>
-      theme.typography.sizes[headerFontSize]}px;
-    font-weight: ${({ theme, boldText }) =>
-      theme.typography.weights[boldText ? 'bold' : 'normal']};
+    font-size: ${({ theme, headerFontSize }) => theme.typography.sizes[headerFontSize]}px;
+    font-weight: ${({ theme, boldText }) => theme.typography.weights[boldText ? 'bold' : 'normal']};
   }
 
   pre {

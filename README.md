@@ -19,10 +19,10 @@ Superset prête à déployer via le pipeline CI/CD.
 
 ## Prérequis
 
-| Outil   | Version minimale | Installation               |
-| ------- | ---------------- | -------------------------- |
+| Outil   | Version minimale | Installation                     |
+| ------- | ---------------- | -------------------------------- |
 | Node.js | >= 18            | [nodejs.org](https://nodejs.org) |
-| Yarn    | >= 1.22          | `npm install -g yarn`      |
+| Yarn    | >= 1.22          | `npm install -g yarn`            |
 
 ```bash
 node --version   # doit afficher v18.x ou supérieur
@@ -33,17 +33,17 @@ yarn --version   # doit afficher 1.22.x ou supérieur
 
 ## Stack technique
 
-| Outil                           | Version | Rôle                                              |
-| ------------------------------- | ------- | ------------------------------------------------- |
-| **TypeScript**                  | 5.9.x   | Langage principal                                 |
-| **React**                       | 19.x    | Framework UI des composants de visualisation      |
-| **recharts**                    | 2.x     | Bibliothèque de graphiques SVG basée sur React    |
-| **@superset-ui/core**           | 0.20.4  | Types et utilitaires du SDK Superset              |
-| **@superset-ui/chart-controls** | 0.20.3  | Construction du panneau de contrôle Superset      |
-| **Lerna v9**                    | 9.x     | Orchestration du monorepo                         |
-| **Babel**                       | 7.x     | Transpilation TypeScript/TSX → JavaScript         |
-| **Jest + @testing-library**     | 29.x    | Tests unitaires                                   |
-| **ESLint + Prettier**           | 8.x/3.x | Lint et formatage du code                         |
+| Outil                           | Version | Rôle                                           |
+| ------------------------------- | ------- | ---------------------------------------------- |
+| **TypeScript**                  | 5.9.x   | Langage principal                              |
+| **React**                       | 19.x    | Framework UI des composants de visualisation   |
+| **recharts**                    | 2.x     | Bibliothèque de graphiques SVG basée sur React |
+| **@superset-ui/core**           | 0.20.4  | Types et utilitaires du SDK Superset           |
+| **@superset-ui/chart-controls** | 0.20.3  | Construction du panneau de contrôle Superset   |
+| **Lerna v9**                    | 9.x     | Orchestration du monorepo                      |
+| **Babel**                       | 7.x     | Transpilation TypeScript/TSX → JavaScript      |
+| **Jest + @testing-library**     | 29.x    | Tests unitaires                                |
+| **ESLint + Prettier**           | 8.x/3.x | Lint et formatage du code                      |
 
 ---
 
@@ -63,16 +63,16 @@ Yarn Workspaces installe toutes les dépendances de la racine et de chaque packa
 
 Toutes les commandes s'exécutent depuis la **racine du monorepo**.
 
-| Commande            | Description                                              |
-| ------------------- | -------------------------------------------------------- |
-| `yarn build`        | Build production de tous les packages (CJS + ESM)        |
-| `yarn build:dev`    | Watch mode — recompile à chaque modification             |
-| `yarn test`         | Lance tous les tests unitaires                           |
-| `yarn test:watch`   | Tests en mode watch                                      |
-| `yarn lint`         | Analyse ESLint sur tous les packages                     |
-| `yarn format`       | Formate tous les fichiers avec Prettier                  |
-| `yarn format:check` | Vérifie le formatage sans modifier (CI)                  |
-| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/`       |
+| Commande            | Description                                        |
+| ------------------- | -------------------------------------------------- |
+| `yarn build`        | Build production de tous les packages (CJS + ESM)  |
+| `yarn build:dev`    | Watch mode — recompile à chaque modification       |
+| `yarn test`         | Lance tous les tests unitaires                     |
+| `yarn test:watch`   | Tests en mode watch                                |
+| `yarn lint`         | Analyse ESLint sur tous les packages               |
+| `yarn format`       | Formate tous les fichiers avec Prettier            |
+| `yarn format:check` | Vérifie le formatage sans modifier (CI)            |
+| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/` |
 
 ---
 
@@ -86,6 +86,7 @@ yarn build
 
 Compile tous les packages dans `plugins/` et `packages/` en séquence via Lerna.
 Chaque plugin produit :
+
 - `dist/` — JavaScript CommonJS + déclarations TypeScript (`.d.ts`)
 - `esm/` — JavaScript ES Modules
 
@@ -167,9 +168,9 @@ cosmotech-viz-plugins/
 
 ## Documentation détaillée
 
-| Document | Audience | Contenu |
-| -------- | -------- | ------- |
-| [docs/PROJECT-OVERVIEW.md](docs/PROJECT-OVERVIEW.md) | Tous | Architecture, stack, flux CI/CD |
-| [docs/DEVELOPER-GUIDE.md](docs/DEVELOPER-GUIDE.md) | Développeurs | Onboarding, créer un plugin, conventions, TypeScript, tests |
-| [docs/USER-GUIDE.md](docs/USER-GUIDE.md) | Utilisateurs | Déploiement Docker, intégration Superset, utilisation UI |
-| [docs/AGENT-CONTEXT.md](docs/AGENT-CONTEXT.md) | Agents IA | Contraintes techniques, templates de code, problèmes connus |
+| Document                                             | Audience     | Contenu                                                     |
+| ---------------------------------------------------- | ------------ | ----------------------------------------------------------- |
+| [docs/PROJECT-OVERVIEW.md](docs/PROJECT-OVERVIEW.md) | Tous         | Architecture, stack, flux CI/CD                             |
+| [docs/DEVELOPER-GUIDE.md](docs/DEVELOPER-GUIDE.md)   | Développeurs | Onboarding, créer un plugin, conventions, TypeScript, tests |
+| [docs/USER-GUIDE.md](docs/USER-GUIDE.md)             | Utilisateurs | Déploiement Docker, intégration Superset, utilisation UI    |
+| [docs/AGENT-CONTEXT.md](docs/AGENT-CONTEXT.md)       | Agents IA    | Contraintes techniques, templates de code, problèmes connus |
