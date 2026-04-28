@@ -78,17 +78,18 @@ cosmotech-viz-plugins/
 
 Toutes les commandes s'exécutent depuis la racine du monorepo.
 
-| Commande            | Description                                          |
-| ------------------- | ---------------------------------------------------- |
-| `yarn plugin:init`  | Scaffold un nouveau plugin depuis `plugin_template/` |
-| `yarn build`        | Build production de tous les packages (CJS + ESM)    |
-| `yarn build:dev`    | Watch mode — recompile à chaque modification         |
-| `yarn test`         | Lance tous les tests unitaires                       |
-| `yarn test:watch`   | Tests en mode watch                                  |
-| `yarn lint`         | Analyse ESLint sur tous les packages                 |
-| `yarn format`       | Formate tous les fichiers avec Prettier              |
-| `yarn format:check` | Vérifie le formatage sans modifier (utilisé en CI)   |
-| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/`   |
+| Commande            | Description                                              |
+| ------------------- | -------------------------------------------------------- |
+| `yarn plugin:init`  | Scaffold un nouveau plugin depuis `plugin_template/`     |
+| `yarn build`        | Build production de tous les packages (CJS + ESM)        |
+| `yarn build:dev`    | Watch mode — recompile à chaque modification             |
+| `yarn test`         | Lance tous les tests unitaires                           |
+| `yarn test:watch`   | Tests en mode watch                                      |
+| `yarn lint`         | Analyse ESLint sur tous les `src/` de chaque package     |
+| `yarn lint:root`    | Analyse ESLint sur les fichiers racine (scripts, config) |
+| `yarn format`       | Formate tous les fichiers avec Prettier                  |
+| `yarn format:check` | Vérifie le formatage sans modifier (utilisé en CI)       |
+| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/`       |
 
 Pour cibler un seul package :
 
@@ -341,8 +342,38 @@ Lerna utilise `conventionalCommits: true`. Préfixes [Conventional Commits](http
 
 ## CI/CD
 
-1. **`ci.yml`** — sur chaque push : `yarn install` + `yarn build` + `yarn lint` + `yarn test`
-2. **`release.yml`** — sur `master` : publication npm + injection Superset + build et push Docker
+### Workflow de CI — `.github/workflows/ci.yml`
+
+Déclenché automatiquement sur **tout push** et toute **pull request**.
+
+```
+trigger : push (toutes branches) + pull_request
+runner  : ubuntu-latest, Node.js 22
+
+étapes :
+  1. Checkout du code
+  2. Setup Node.js 22 (avec cache Yarn)
+  3. yarn install --frozen-lockfile
+  4. yarn build        ← build CJS + ESM de tous les packages
+  5. yarn lint         ← ESLint sur tous les src/
+  6. yarn format:check ← vérification Prettier (fail si non formaté)
+  7. yarn test         ← Jest sur tous les packages
+```
+
+Avant de pousser un commit, vérifier localement dans le même ordre :
+
+```bash
+yarn build && yarn lint && yarn format:check && yarn test
+```
+
+> `yarn format:check` exclut `plugin_template/src`, `plugin_template/test` et
+> `plugin_template/types` via `.prettierignore` — ces répertoires contiennent des tokens
+> `{{...}}` qui ne sont pas du TypeScript valide.
+
+### Workflow de release — `.github/workflows/release.yml`
+
+Pas encore créé. Il sera détaillé ultérieurement et prendra en charge : publication npm,
+injection Superset et build/push Docker.
 
 ### Variables d'environnement requises en CI
 

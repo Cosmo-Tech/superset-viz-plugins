@@ -74,6 +74,10 @@ cosmotech-viz-plugins/
 │   ├── generatePreset.js             ← Generates <PRESET_NAME>Preset.ts from all plugins
 │   ├── generateSetupPluginsExtra.js  ← Generates setupPluginsExtra.ts
 │   └── prepare_build.sh             ← Orchestrates full Superset injection (CI only)
+├── .github/
+│   └── workflows/
+│       ├── ci.yml                    ← Build + Lint + Format check + Test on every push/PR
+│       └── release.yml               ← (future) npm publish + Docker push on master
 ├── docs/
 │   ├── PROJECT-OVERVIEW.md          ← High-level project overview (French)
 │   ├── DEVELOPER-GUIDE.md           ← Developer onboarding guide (French)
@@ -93,17 +97,18 @@ cosmotech-viz-plugins/
 
 ## Available scripts (root)
 
-| Script              | Command                      | Purpose                                             |
-| ------------------- | ---------------------------- | --------------------------------------------------- |
-| `yarn plugin:init`  | `node scripts/initPlugin.js` | Scaffold a new plugin from `plugin_template/`       |
-| `yarn build`        | `lerna run build`            | Production build (CJS + ESM) for all packages       |
-| `yarn build:dev`    | `lerna run build:dev`        | Watch mode via `tsc --watch`                        |
-| `yarn test`         | `lerna run test`             | Jest across all packages                            |
-| `yarn test:watch`   | `lerna run test:watch`       | Jest watch mode                                     |
-| `yarn lint`         | `lerna run lint`             | ESLint on all `src/` directories                    |
-| `yarn format`       | `prettier --write`           | Auto-format all `.ts/.tsx/.js/.json/.md` files      |
-| `yarn format:check` | `prettier --check`           | CI formatting check (fails if unformatted)          |
-| `yarn clean`        | `lerna run clean`            | Delete `dist/`, `esm/`, `coverage/` in all packages |
+| Script              | Command                       | Purpose                                             |
+| ------------------- | ----------------------------- | --------------------------------------------------- |
+| `yarn plugin:init`  | `node scripts/initPlugin.js`  | Scaffold a new plugin from `plugin_template/`       |
+| `yarn build`        | `lerna run build`             | Production build (CJS + ESM) for all packages       |
+| `yarn build:dev`    | `lerna run build:dev`         | Watch mode via `tsc --watch`                        |
+| `yarn test`         | `lerna run test`              | Jest across all packages                            |
+| `yarn test:watch`   | `lerna run test:watch`        | Jest watch mode                                     |
+| `yarn lint`         | `lerna run lint`              | ESLint on all `src/` directories                    |
+| `yarn lint:root`    | `eslint . --ext .ts,.tsx,.js` | ESLint on root-level files (scripts, config)        |
+| `yarn format`       | `prettier --write`            | Auto-format all `.ts/.tsx/.js/.json/.md` files      |
+| `yarn format:check` | `prettier --check`            | CI formatting check (fails if unformatted)          |
+| `yarn clean`        | `lerna run clean`             | Delete `dist/`, `esm/`, `coverage/` in all packages |
 
 ---
 
@@ -145,6 +150,18 @@ yarn install   # picks up the new workspace
 yarn workspace @cosmotech-viz/plugin-<name> build
 yarn workspace @cosmotech-viz/plugin-<name> test
 ```
+
+### `scripts/initPlugin.js` — implementation notes
+
+- Uses a **producer-consumer readline** (`createPrompter()`): a single `readline.Interface` is
+  created for the entire session. Incoming `'line'` events go into `lineBuffer` (piped mode) or
+  resolve a pending promise (TTY mode). This is necessary because recreating `readline` after each
+  `rl.close()` causes stdin data loss on non-TTY streams (fish shell, yarn spawned processes…).
+- Plugin name validation regex: `^[a-z][a-z0-9]*(-[a-z0-9]+)*$` — accepts single-word names
+  (`toto`) as well as hyphenated names (`my-chart`).
+- Token replacement uses `content.split(token).join(value)` (not regex) — safe against special
+  characters in the description.
+- Binary files (`png`, `jpg`, `gif`, etc.) are copied byte-for-byte with `fs.copyFileSync`.
 
 ---
 
@@ -432,12 +449,33 @@ export default controlPanel;
 - Static assets (images, SVG, CSS) must be copied via `scripts/copyAssets.js` — tsc does not copy non-TS files.
 - Do NOT add `eslint-disable-next-line import/prefer-default-export` in source files — `eslint-plugin-import` is not installed.
 - Babel `--copy-files` flag in the build script copies non-TS files (images, JSON) into `dist/`.
+- `.prettierignore` excludes `plugin_template/src`, `plugin_template/test`, and `plugin_template/types` — these directories contain `{{TOKEN}}` placeholders that are not valid TypeScript/TSX syntax and cannot be parsed by Prettier. Config files in `plugin_template/` root (`package.json`, `jest.config.js`, `README.md`) are still checked.
 
 ---
 
-## CI/CD environment variables
+## CI/CD
 
-Used by `scripts/prepare_build.sh` and the GitHub Actions release workflow:
+### `.github/workflows/ci.yml` — runs on every push and PR
+
+```
+trigger: push (all branches) + pull_request
+runner: ubuntu-latest, Node 22
+
+steps:
+  1. actions/checkout@v4
+  2. actions/setup-node@v4  (node-version: 22, cache: yarn)
+  3. yarn install --frozen-lockfile
+  4. yarn build             ← lerna run build (CJS + ESM)
+  5. yarn lint              ← lerna run lint (ESLint)
+  6. yarn format:check      ← prettier --check
+  7. yarn test              ← lerna run test (Jest)
+```
+
+### `.github/workflows/release.yml` — not yet created (planned)
+
+Will handle: npm publish + Superset injection + Docker build & push on master.
+
+### Environment variables used by `scripts/prepare_build.sh` and release workflow
 
 | Variable                    | Description                                                    |
 | --------------------------- | -------------------------------------------------------------- |

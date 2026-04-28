@@ -25,7 +25,10 @@ cosmotech-viz-plugins/
 │   ├── generateSetupPluginsExtra.js
 │   └── prepare_build.sh
 ├── docs/                     ← Documentation du projet
-├── .github/workflows/        ← CI/CD GitHub Actions
+├── .github/
+│   └── workflows/
+│       ├── ci.yml            ← Build + Lint + Format check + Test (tout push/PR)
+│       └── release.yml       ← (futur) npm publish + Docker push
 ├── package.json              ← Racine du monorepo
 ├── lerna.json                ← Configuration Lerna pour la gestion du monorepo
 └── tsconfig.json             ← Configuration TypeScript partagée
@@ -59,8 +62,9 @@ cosmotech-viz-plugins/
                            │ git push
                            ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  GitHub Actions — ci.yml                                        │
-│  └── yarn install + yarn build + yarn lint + yarn test          │
+│  GitHub Actions — ci.yml (tout push / toute PR)                 │
+│  └── yarn install + yarn build + yarn lint                      │
+│      + yarn format:check + yarn test                            │
 └──────────────────────────┬──────────────────────────────────────┘
                            │ (si branche master)
                            ▼
