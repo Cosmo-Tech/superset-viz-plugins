@@ -116,7 +116,7 @@ remplacés dans tous les fichiers. Il suffit ensuite de :
 
 ```bash
 yarn install
-yarn workspace @cosmotech-viz/plugin-mon-graphique build
+yarn workspace @cosmotech/plugin-mon-graphique build
 ```
 
 ---

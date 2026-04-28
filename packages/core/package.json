@@ -1,5 +1,5 @@
 {
-  "name": "@cosmotech-viz/core",
+  "name": "@cosmotech/core",
   "version": "0.1.0",
   "description": "Shared components and utilities for cosmotech-viz Superset plugins",
   "main": "dist/index.js",

@@ -13,12 +13,12 @@ mécanisme standard de plugins de visualisation.
 
 ## Plugins disponibles
 
-Les plugins sont publiés sur npm sous le scope `@cosmotech-viz/`. Chaque plugin dans le dossier
+Les plugins sont publiés sur npm sous le scope `@cosmotech/`. Chaque plugin dans le dossier
 `plugins/` correspond à un package npm indépendant.
 
-| Plugin                                   | Package npm                         | Description                                                          |
-| ---------------------------------------- | ----------------------------------- | -------------------------------------------------------------------- |
-| **Hello World** (`plugins/hello-world/`) | `@cosmotech-viz/plugin-hello-world` | Plugin démonstratif — point de départ pour créer de nouveaux plugins |
+| Plugin                                   | Package npm                     | Description                                                          |
+| ---------------------------------------- | ------------------------------- | -------------------------------------------------------------------- |
+| **Hello World** (`plugins/hello-world/`) | `@cosmotech/plugin-hello-world` | Plugin démonstratif — point de départ pour créer de nouveaux plugins |
 
 > D'autres plugins seront ajoutés dans ce tableau au fur et à mesure des publications.
 
@@ -55,7 +55,7 @@ préconfiguré pour charger les plugins externes.
 Dans le dossier `superset/superset-frontend/` de votre Superset :
 
 ```bash
-npm install @cosmotech-viz/plugin-mon-graphique
+npm install @cosmotech/plugin-mon-graphique
 ```
 
 Répéter pour chaque plugin souhaité.

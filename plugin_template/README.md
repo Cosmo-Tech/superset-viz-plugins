@@ -1,4 +1,4 @@
-# @cosmotech-viz/plugin-{{PACKAGE_NAME}}
+# @cosmotech/plugin-{{PACKAGE_NAME}}
 
 {{DESCRIPTION}}
 
@@ -11,7 +11,7 @@ This plugin was scaffolded using `yarn plugin:init` and follows the cosmotech-vi
 Add this plugin to your Superset preset:
 
 ```ts
-import { {{PLUGIN_CLASS_NAME}}Plugin } from '@cosmotech-viz/plugin-{{PACKAGE_NAME}}';
+import { {{PLUGIN_CLASS_NAME}}Plugin } from '@cosmotech/plugin-{{PACKAGE_NAME}}';
 
 const plugin = new {{PLUGIN_CLASS_NAME}}Plugin();
 plugin.configure({ key: '{{PACKAGE_NAME}}' }).register();
@@ -21,13 +21,13 @@ plugin.configure({ key: '{{PACKAGE_NAME}}' }).register();
 
 ```bash
 # Build
-yarn workspace @cosmotech-viz/plugin-{{PACKAGE_NAME}} build
+yarn workspace @cosmotech/plugin-{{PACKAGE_NAME}} build
 
 # Test
-yarn workspace @cosmotech-viz/plugin-{{PACKAGE_NAME}} test
+yarn workspace @cosmotech/plugin-{{PACKAGE_NAME}} test
 
 # Lint
-yarn workspace @cosmotech-viz/plugin-{{PACKAGE_NAME}} lint
+yarn workspace @cosmotech/plugin-{{PACKAGE_NAME}} lint
 ```
 
 ## License

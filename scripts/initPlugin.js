@@ -175,14 +175,14 @@ async function main() {
   console.log(`
 ✓ Plugin scaffolded successfully!
 
-  Package : @cosmotech-viz/plugin-${packageName}
+  Package : @cosmotech/plugin-${packageName}
   Class   : ${className}Plugin
   Location: plugins/${packageName}/
 
 Next steps:
   yarn install
-  yarn workspace @cosmotech-viz/plugin-${packageName} build
-  yarn workspace @cosmotech-viz/plugin-${packageName} test
+  yarn workspace @cosmotech/plugin-${packageName} build
+  yarn workspace @cosmotech/plugin-${packageName} test
 `);
 }
 

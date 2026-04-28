@@ -3,7 +3,7 @@
 ## Repository overview
 
 Lerna v9 monorepo of custom Apache Superset visualization plugins. Each plugin is an independent
-npm package (TypeScript + React 19) published under the `@cosmotech-viz/` scope.
+npm package (TypeScript + React 19) published under the `@cosmotech/` scope.
 
 - **Runtime**: Node >= 18, Yarn 1.22 (classic workspaces)
 - **Package manager**: yarn — `workspaces: ["plugins/*", "packages/*"]`
@@ -61,7 +61,7 @@ cosmotech-viz-plugins/
 │   ├── .gitignore
 │   └── README.md                     ← Tokens: {{PACKAGE_NAME}}, {{PLUGIN_CLASS_NAME}}, {{DESCRIPTION}}
 ├── packages/
-│   └── core/                         ← @cosmotech-viz/core (shared utilities)
+│   └── core/                         ← @cosmotech/core (shared utilities)
 │       ├── package.json
 │       ├── tsconfig.json             ← CommonJS build → dist/
 │       ├── tsconfig.esm.json         ← ESM build → esm/
@@ -147,8 +147,8 @@ is also renamed to `<ClassName>.tsx`.
 
 ```bash
 yarn install   # picks up the new workspace
-yarn workspace @cosmotech-viz/plugin-<name> build
-yarn workspace @cosmotech-viz/plugin-<name> test
+yarn workspace @cosmotech/plugin-<name> build
+yarn workspace @cosmotech/plugin-<name> test
 ```
 
 ### `scripts/initPlugin.js` — implementation notes
@@ -171,7 +171,7 @@ yarn workspace @cosmotech-viz/plugin-<name> test
 
 ```json
 {
-  "name": "@cosmotech-viz/plugin-<name>",
+  "name": "@cosmotech/plugin-<name>",
   "version": "0.1.0",
   "pluginName": "<PascalCase>ChartPlugin",
   "main": "dist/index.js",
@@ -256,7 +256,7 @@ file.
 
 ```js
 module.exports = {
-  displayName: '@cosmotech-viz/plugin-<name>',
+  displayName: '@cosmotech/plugin-<name>',
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { rootMode: 'upward' }],
@@ -491,8 +491,8 @@ Will handle: npm publish + Superset injection + Docker build & push on master.
 1. Add the implementation in `packages/core/src/`
 2. Export it from `packages/core/src/index.ts`
 3. Run `yarn build` to compile
-4. In the consuming plugin's `package.json`, add `"@cosmotech-viz/core": "*"` as a dependency
-5. Import: `import { MyUtil } from '@cosmotech-viz/core'`
+4. In the consuming plugin's `package.json`, add `"@cosmotech/core": "*"` as a dependency
+5. Import: `import { MyUtil } from '@cosmotech/core'`
 
 ---
 

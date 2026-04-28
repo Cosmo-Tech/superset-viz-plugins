@@ -1,7 +1,7 @@
 # cosmotech-viz-plugins
 
 Monorepo de plugins de visualisation personnalisés pour [Apache Superset](https://superset.apache.org/).
-Chaque plugin est un package npm indépendant (TypeScript + React 19) publié sous le scope `@cosmotech-viz/`.
+Chaque plugin est un package npm indépendant (TypeScript + React 19) publié sous le scope `@cosmotech/`.
 
 > Documentation complète dans le dossier [`docs/`](docs/) :
 > [Vue d'ensemble](docs/PROJECT-OVERVIEW.md) · [Guide développeur](docs/DEVELOPER-GUIDE.md) · [Guide utilisateur](docs/USER-GUIDE.md) · [Contexte agent IA](docs/AGENT-CONTEXT.md)
@@ -93,15 +93,15 @@ Chaque plugin produit :
 ### Lancer le build d'un seul plugin
 
 ```bash
-yarn workspace @cosmotech-viz/plugin-hello-world build
+yarn workspace @cosmotech/plugin-hello-world build
 ```
 
-Remplacer `@cosmotech-viz/plugin-hello-world` par le `name` déclaré dans le `package.json` du plugin cible.
+Remplacer `@cosmotech/plugin-hello-world` par le `name` déclaré dans le `package.json` du plugin cible.
 
 Pour recompiler automatiquement à chaque modification (watch mode) :
 
 ```bash
-yarn workspace @cosmotech-viz/plugin-hello-world build:dev
+yarn workspace @cosmotech/plugin-hello-world build:dev
 ```
 
 ### Lancer les tests du projet complet
@@ -116,13 +116,13 @@ est généré dans `coverage/`.
 ### Lancer les tests d'un seul plugin
 
 ```bash
-yarn workspace @cosmotech-viz/plugin-hello-world test
+yarn workspace @cosmotech/plugin-hello-world test
 ```
 
 Pour lancer en mode watch (relance automatiquement les tests impactés par une modification) :
 
 ```bash
-yarn workspace @cosmotech-viz/plugin-hello-world test:watch
+yarn workspace @cosmotech/plugin-hello-world test:watch
 ```
 
 ### Lancer le linter sur le projet complet
@@ -136,13 +136,13 @@ Exécute ESLint sur les dossiers `src/` de tous les packages.
 ### Lancer le linter sur un seul plugin
 
 ```bash
-yarn workspace @cosmotech-viz/plugin-hello-world lint
+yarn workspace @cosmotech/plugin-hello-world lint
 ```
 
 Pour corriger automatiquement les erreurs réparables :
 
 ```bash
-yarn workspace @cosmotech-viz/plugin-hello-world eslint src --ext .ts,.tsx --fix
+yarn workspace @cosmotech/plugin-hello-world eslint src --ext .ts,.tsx --fix
 ```
 
 ---
@@ -152,9 +152,9 @@ yarn workspace @cosmotech-viz/plugin-hello-world eslint src --ext .ts,.tsx --fix
 ```
 cosmotech-viz-plugins/
 ├── plugins/                  ← Un sous-dossier = un plugin npm indépendant
-│   └── hello-world/          ← @cosmotech-viz/plugin-hello-world (exemple)
+│   └── hello-world/          ← @cosmotech/plugin-hello-world (exemple)
 ├── packages/
-│   └── core/                 ← @cosmotech-viz/core (composants partagés)
+│   └── core/                 ← @cosmotech/core (composants partagés)
 ├── scripts/                  ← Scripts d'injection Superset (CI/CD)
 ├── docs/                     ← Documentation complète
 ├── babel.config.js

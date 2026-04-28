@@ -1,5 +1,5 @@
 {
-  "name": "@cosmotech-viz/plugin-hello-world",
+  "name": "@cosmotech/plugin-hello-world",
   "version": "0.1.0",
   "description": "Simple Plugin that display \"Hello World\"",
   "pluginName": "HelloWorld",

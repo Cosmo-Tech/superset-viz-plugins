@@ -51,7 +51,7 @@ cosmotech-viz-plugins/
 │   ├── babel.config.js
 │   └── jest.config.js
 ├── packages/
-│   └── core/                        ← @cosmotech-viz/core — composants partagés
+│   └── core/                        ← @cosmotech/core — composants partagés
 │       ├── src/index.ts             ← Point d'entrée (exports publics)
 │       ├── tsconfig.json            ← Build CJS → dist/
 │       └── tsconfig.esm.json        ← Build ESM → esm/
@@ -94,8 +94,8 @@ Toutes les commandes s'exécutent depuis la racine du monorepo.
 Pour cibler un seul package :
 
 ```bash
-yarn workspace @cosmotech-viz/core build
-yarn workspace @cosmotech-viz/core test
+yarn workspace @cosmotech/core build
+yarn workspace @cosmotech/core test
 ```
 
 ---
@@ -119,7 +119,7 @@ Display name (e.g. My Chart): Mon Graphique
 Description: Visualisation personnalisée de données
 ```
 
-- **Plugin name** — identifiant kebab-case, devient le nom npm `@cosmotech-viz/plugin-<nom>` et
+- **Plugin name** — identifiant kebab-case, devient le nom npm `@cosmotech/plugin-<nom>` et
   le nom du sous-dossier dans `plugins/`.
 - **Display name** — nom affiché dans l'interface Superset.
 - **Description** — description courte (readme, metadata).
@@ -167,9 +167,9 @@ Yarn Workspaces détecte automatiquement le nouveau package et installe ses dép
 ### 3. Vérifier le build, les tests et le lint
 
 ```bash
-yarn workspace @cosmotech-viz/plugin-mon-graphique build
-yarn workspace @cosmotech-viz/plugin-mon-graphique test
-yarn workspace @cosmotech-viz/plugin-mon-graphique lint
+yarn workspace @cosmotech/plugin-mon-graphique build
+yarn workspace @cosmotech/plugin-mon-graphique test
+yarn workspace @cosmotech/plugin-mon-graphique lint
 ```
 
 Ou en une seule passe depuis la racine :
@@ -237,7 +237,7 @@ export default class MonGraphiquePlugin extends ChartPlugin {
 
 ---
 
-## Package partagé `@cosmotech-viz/core`
+## Package partagé `@cosmotech/core`
 
 `packages/core` contient les composants et utilitaires réutilisables entre plugins.
 
@@ -246,7 +246,7 @@ Pour utiliser `core` dans un plugin, l'ajouter en dépendance :
 ```json
 {
   "dependencies": {
-    "@cosmotech-viz/core": "*"
+    "@cosmotech/core": "*"
   }
 }
 ```
@@ -254,7 +254,7 @@ Pour utiliser `core` dans un plugin, l'ajouter en dépendance :
 Puis importer :
 
 ```typescript
-import { MonUtilitaire } from '@cosmotech-viz/core';
+import { MonUtilitaire } from '@cosmotech/core';
 ```
 
 Pour ajouter un export à `core`, modifier `packages/core/src/index.ts` puis relancer `yarn build`.
