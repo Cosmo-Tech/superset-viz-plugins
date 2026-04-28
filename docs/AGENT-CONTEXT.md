@@ -26,11 +26,15 @@ cosmotech-viz-plugins/
 │       ├── babel.config.js           ← Mirrors root babel.config.js (preset-env CJS)
 │       ├── jest.config.js            ← Local Jest config with @superset-ui mocks
 │       ├── src/
-│       │   ├── index.ts              ← Default export: class extending ChartPlugin
-│       │   ├── buildQuery.ts         ← buildQuery function
-│       │   ├── transformProps.ts     ← transformProps function
-│       │   ├── controlPanel.ts       ← controlPanel object
-│       │   └── <Component>.tsx       ← React component (the chart renderer)
+│       │   ├── index.ts              ← Re-exports the Plugin class from plugin/
+│       │   ├── types.ts              ← FormData and Props interfaces
+│       │   ├── <ClassName>.tsx       ← React component (the chart renderer)
+│       │   ├── images/
+│       │   └── plugin/
+│       │       ├── index.ts          ← Class extending ChartPlugin (loadChart dynamic import)
+│       │       ├── buildQuery.ts     ← buildQuery function
+│       │       ├── transformProps.ts ← transformProps function
+│       │       └── controlPanel.ts   ← controlPanel object
 │       ├── test/
 │       │   ├── index.test.ts         ← Plugin registration test
 │       │   ├── plugin/               ← Tests for buildQuery, transformProps
@@ -40,6 +44,22 @@ cosmotech-viz-plugins/
 │       │       └── mockExportString.js        ← Static asset stub
 │       └── types/
 │           └── external.d.ts         ← Ambient declarations for untyped imports
+├── plugin_template/                  ← Source of truth for `yarn plugin:init`
+│   ├── src/
+│   │   ├── __PLUGIN_CLASS_NAME__.tsx  ← Renamed to <ClassName>.tsx at generation time
+│   │   ├── index.ts                  ← Token: {{PLUGIN_CLASS_NAME}}
+│   │   ├── types.ts                  ← Tokens: {{PLUGIN_CLASS_NAME}}
+│   │   ├── images/thumbnail.png
+│   │   └── plugin/
+│   ├── test/                         ← Same structure as plugins/<name>/test/
+│   ├── types/external.d.ts
+│   ├── package.json                  ← Tokens: {{PACKAGE_NAME}}, {{PLUGIN_CLASS_NAME}}, {{DESCRIPTION}}
+│   ├── tsconfig.json                 ← Identical to plugin tsconfig pattern
+│   ├── tsconfig.esm.json
+│   ├── babel.config.js
+│   ├── jest.config.js                ← Token: {{PACKAGE_NAME}}
+│   ├── .gitignore
+│   └── README.md                     ← Tokens: {{PACKAGE_NAME}}, {{PLUGIN_CLASS_NAME}}, {{DESCRIPTION}}
 ├── packages/
 │   └── core/                         ← @cosmotech-viz/core (shared utilities)
 │       ├── package.json
@@ -48,6 +68,7 @@ cosmotech-viz-plugins/
 │       ├── jest.config.js
 │       └── src/index.ts              ← All public exports
 ├── scripts/
+│   ├── initPlugin.js             ← `yarn plugin:init` — scaffolds from plugin_template/
 │   ├── addDependencies.js            ← Injects plugins into Superset frontend package.json
 │   ├── copyAssets.js                 ← Copies static assets (png/svg/css…) to dist/ and esm/
 │   ├── generatePreset.js             ← Generates <PRESET_NAME>Preset.ts from all plugins
@@ -55,8 +76,8 @@ cosmotech-viz-plugins/
 │   └── prepare_build.sh             ← Orchestrates full Superset injection (CI only)
 ├── docs/
 │   ├── PROJECT-OVERVIEW.md          ← High-level project overview (French)
-│   ├── DEVELOPER-GUIDE.md           ← Developer onboarding guide
-│   ├── USER-GUIDE.md                ← End-user guide
+│   ├── DEVELOPER-GUIDE.md           ← Developer onboarding guide (French)
+│   ├── USER-GUIDE.md                ← End-user guide (French)
 │   ├── AGENT-CONTEXT.md             ← This file
 │   └── webpack.config.js            ← Patched Superset webpack config for manual integration
 ├── babel.config.js                   ← Babel: preset-env (node current) + preset-react + preset-typescript
@@ -72,16 +93,58 @@ cosmotech-viz-plugins/
 
 ## Available scripts (root)
 
-| Script              | Command                | Purpose                                             |
-| ------------------- | ---------------------- | --------------------------------------------------- |
-| `yarn build`        | `lerna run build`      | Production build (CJS + ESM) for all packages       |
-| `yarn build:dev`    | `lerna run build:dev`  | Watch mode via `tsc --watch`                        |
-| `yarn test`         | `lerna run test`       | Jest across all packages                            |
-| `yarn test:watch`   | `lerna run test:watch` | Jest watch mode                                     |
-| `yarn lint`         | `lerna run lint`       | ESLint on all `src/` directories                    |
-| `yarn format`       | `prettier --write`     | Auto-format all `.ts/.tsx/.js/.json/.md` files      |
-| `yarn format:check` | `prettier --check`     | CI formatting check (fails if unformatted)          |
-| `yarn clean`        | `lerna run clean`      | Delete `dist/`, `esm/`, `coverage/` in all packages |
+| Script              | Command                             | Purpose                                             |
+| ------------------- | ----------------------------------- | --------------------------------------------------- |
+| `yarn plugin:init`  | `node scripts/initPlugin.js`        | Scaffold a new plugin from `plugin_template/`       |
+| `yarn build`        | `lerna run build`                   | Production build (CJS + ESM) for all packages       |
+| `yarn build:dev`    | `lerna run build:dev`               | Watch mode via `tsc --watch`                        |
+| `yarn test`         | `lerna run test`                    | Jest across all packages                            |
+| `yarn test:watch`   | `lerna run test:watch`              | Jest watch mode                                     |
+| `yarn lint`         | `lerna run lint`                    | ESLint on all `src/` directories                    |
+| `yarn format`       | `prettier --write`                  | Auto-format all `.ts/.tsx/.js/.json/.md` files      |
+| `yarn format:check` | `prettier --check`                  | CI formatting check (fails if unformatted)          |
+| `yarn clean`        | `lerna run clean`                   | Delete `dist/`, `esm/`, `coverage/` in all packages |
+
+---
+
+## Plugin scaffolding — `yarn plugin:init`
+
+`scripts/initPlugin.js` scaffolds a new plugin by copying `plugin_template/` and replacing tokens.
+
+### Invocation
+
+```bash
+yarn plugin:init
+# or non-interactively:
+printf 'my-chart\nMy Chart\nA description\n' | yarn plugin:init
+```
+
+### Token map
+
+| Token                       | Value                            | Example               |
+| --------------------------- | -------------------------------- | --------------------- |
+| `{{PACKAGE_NAME}}`          | kebab-case plugin name           | `my-chart`            |
+| `{{PLUGIN_CLASS_NAME}}`     | PascalCase derived from name     | `MyChart`             |
+| `{{PLUGIN_DISPLAY_NAME}}`   | Human-readable name              | `My Chart`            |
+| `{{DESCRIPTION}}`           | Short description                | `A description`       |
+
+Tokens are replaced in **all text files**. The placeholder filename `__PLUGIN_CLASS_NAME__.tsx`
+is also renamed to `<ClassName>.tsx`.
+
+### What the script generates
+
+- Full `src/` tree: component, types, index, plugin/{index,buildQuery,controlPanel,transformProps}
+- Full `test/` tree with 3 suites and 3 `__mocks__/` files
+- All config files: `package.json`, `tsconfig.json`, `tsconfig.esm.json`, `babel.config.js`, `jest.config.js`, `.gitignore`, `README.md`
+- Thumbnail: `src/images/thumbnail.png` (binary copy)
+
+### After scaffolding
+
+```bash
+yarn install   # picks up the new workspace
+yarn workspace @cosmotech-viz/plugin-<name> build
+yarn workspace @cosmotech-viz/plugin-<name> test
+```
 
 ---
 
@@ -221,19 +284,29 @@ module.exports = { t, supersetTheme, ChartProps, ChartMetadata, ChartPlugin, bui
 ### `src/index.ts`
 
 ```typescript
-import { ChartPlugin } from '@superset-ui/core';
+export { default as MyChartPlugin } from './plugin';
+```
+
+### `src/plugin/index.ts`
+
+```typescript
+import { ChartPlugin, ChartMetadata } from '@superset-ui/core';
 import buildQuery from './buildQuery';
 import controlPanel from './controlPanel';
 import transformProps from './transformProps';
-import MyComponent from './MyComponent';
+import thumbnail from '../images/thumbnail.png';
 
 export default class MyChartPlugin extends ChartPlugin {
   constructor() {
     super({
       buildQuery,
       controlPanel,
-      loadChart: () => MyComponent,
-      metadata: { name: 'My Chart', thumbnail: '' },
+      loadChart: () => import('../MyChart'),  // dynamic import for code-splitting
+      metadata: new ChartMetadata({
+        description: 'My chart description',
+        name: 'My Chart',
+        thumbnail,
+      }),
       transformProps,
     });
   }

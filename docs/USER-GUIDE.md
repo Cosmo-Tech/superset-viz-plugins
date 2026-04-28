@@ -86,3 +86,6 @@ Ouvrir une issue sur le dépôt GitHub avec :
 - La description du graphique souhaité
 - Un exemple de données d'entrée (format JSON si possible)
 - Un mockup ou une capture d'écran du rendu attendu
+
+> Pour les développeurs : un nouveau plugin peut être scaffoldé en quelques secondes avec
+> `yarn plugin:init` depuis la racine du monorepo (voir [DEVELOPER-GUIDE.md](./DEVELOPER-GUIDE.md)).

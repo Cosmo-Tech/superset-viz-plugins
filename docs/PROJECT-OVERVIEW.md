@@ -13,10 +13,17 @@ Il permet à des équipes qui opèrent leur propre instance Superset d'**ajouter
 ```
 cosmotech-viz-plugins/
 ├── plugins/                  ← Chaque sous-dossier est un plugin npm indépendant
-│   ├── plugin-hello-world
+│   └── hello-world/
+├── plugin_template/          ← Gabarit de plugin (utilisé par `yarn plugin:init`)
 ├── packages/
 │   └── core/                 ← Package de composants partagés entre plugins
 ├── scripts/                  ← Scripts de build/release vers Superset
+│   ├── initPlugin.js         ← Génère un nouveau plugin depuis plugin_template/
+│   ├── addDependencies.js
+│   ├── copyAssets.js
+│   ├── generatePreset.js
+│   ├── generateSetupPluginsExtra.js
+│   └── prepare_build.sh
 ├── docs/                     ← Documentation du projet
 ├── .github/workflows/        ← CI/CD GitHub Actions
 ├── package.json              ← Racine du monorepo
@@ -84,24 +91,29 @@ Le script `scripts/prepare_build.sh` injecte automatiquement ces plugins dans le
 
 ## Comment initialiser un plugin
 
-Chaque plugin est généré depuis un generateur [Yeoman](https://yeoman.io/) existant (https://www.npmjs.com/package/@superset-ui/generator-superset)
+Un générateur intégré au monorepo scaffolde automatiquement un nouveau plugin depuis le gabarit
+`plugin_template/`. Aucune dépendance extérieure n'est nécessaire.
 
-L'utilisateur crée un sous-dossier dans le dossier `plugins` qui accueillera son plugin.
-
-Il faut ensuite, installer `Yeoman` et le generateur (s'ils ne sont pas déja présents):
-
-```
-npm install -g yo
-npm install -g @superset-ui/generator-superset
+```bash
+yarn plugin:init
 ```
 
-Dans le dossier du plugin:
+Le script pose trois questions :
 
 ```
-yo @superset-ui/superset
+Plugin name (kebab-case, e.g. my-chart): mon-graphique
+Display name (e.g. My Chart): Mon Graphique
+Description: Visualisation personnalisée de données
 ```
 
-L'utilisateur est guidé ensuite tout au long de la création du plugin
+Le générateur crée `plugins/mon-graphique/` avec la structure complète (sources, tests, config),
+les tokens `{{PACKAGE_NAME}}`, `{{PLUGIN_CLASS_NAME}}`, `{{PLUGIN_DISPLAY_NAME}}`, `{{DESCRIPTION}}`
+remplacés dans tous les fichiers. Il suffit ensuite de :
+
+```bash
+yarn install
+yarn workspace @cosmotech-viz/plugin-mon-graphique build
+```
 
 ---
 

@@ -2,12 +2,10 @@
 
 ## Prérequis
 
-| Outil               | Version minimale | Installation                                     |
-| ------------------- | ---------------- | ------------------------------------------------ |
-| Node.js             | >= 18            | [nodejs.org](https://nodejs.org)                 |
-| Yarn                | >= 1.22          | `npm install -g yarn`                            |
-| Yeoman              | dernière         | `npm install -g yo` (optionnel)                  |
-| Générateur Superset | dernière         | `npm install -g @superset-ui/generator-superset` (optionnel) |
+| Outil   | Version minimale | Installation                     |
+| ------- | ---------------- | -------------------------------- |
+| Node.js | >= 18            | [nodejs.org](https://nodejs.org) |
+| Yarn    | >= 1.22          | `npm install -g yarn`            |
 
 Vérifier l'environnement :
 
@@ -34,27 +32,44 @@ Yarn Workspaces installe toutes les dépendances de la racine et de chaque packa
 
 ```
 cosmotech-viz-plugins/
-├── plugins/                       ← Un sous-dossier = un plugin npm indépendant
-│   └── plugin-hello-world/        ← Exemple de plugin (généré par Yeoman)
+├── plugins/                         ← Un sous-dossier = un plugin npm indépendant
+│   └── hello-world/                 ← Exemple de plugin de référence
+├── plugin_template/                 ← Gabarit utilisé par `yarn plugin:init`
+│   ├── src/
+│   │   ├── __PLUGIN_CLASS_NAME__.tsx ← Composant React (renommé à la génération)
+│   │   ├── index.ts
+│   │   ├── types.ts
+│   │   ├── images/
+│   │   └── plugin/
+│   ├── test/
+│   │   ├── __mocks__/
+│   │   └── plugin/
+│   ├── types/
+│   ├── package.json                 ← Contient les tokens {{PACKAGE_NAME}}, etc.
+│   ├── tsconfig.json
+│   ├── tsconfig.esm.json
+│   ├── babel.config.js
+│   └── jest.config.js
 ├── packages/
-│   └── core/                      ← @cosmotech-viz/core — composants partagés
-│       ├── src/index.ts           ← Point d'entrée (exports publics)
-│       ├── tsconfig.json          ← Build CJS → dist/
-│       └── tsconfig.esm.json      ← Build ESM → esm/
-├── scripts/                       ← Scripts d'injection vers Superset (CI/CD)
-│   ├── addDependencies.js         ← Injecte les plugins dans package.json Superset
-│   ├── copyAssets.js              ← Copie les assets statiques vers dist/ et esm/
-│   ├── generatePreset.js          ← Génère le fichier *Preset.ts pour Superset
+│   └── core/                        ← @cosmotech-viz/core — composants partagés
+│       ├── src/index.ts             ← Point d'entrée (exports publics)
+│       ├── tsconfig.json            ← Build CJS → dist/
+│       └── tsconfig.esm.json        ← Build ESM → esm/
+├── scripts/
+│   ├── initPlugin.js                ← Scaffold d'un plugin depuis plugin_template/
+│   ├── addDependencies.js           ← Injecte les plugins dans package.json Superset
+│   ├── copyAssets.js                ← Copie les assets statiques vers dist/ et esm/
+│   ├── generatePreset.js            ← Génère le fichier *Preset.ts pour Superset
 │   ├── generateSetupPluginsExtra.js ← Génère setupPluginsExtra.ts
-│   └── prepare_build.sh           ← Orchestre l'injection complète (utilisé en CI)
-├── docs/                          ← Documentation
-├── babel.config.js                ← Transpilation TS/TSX → JS (Jest)
-├── jest.config.js                 ← Config Jest racine (découverte auto des suites)
-├── lerna.json                     ← Configuration Lerna v9
-├── package.json                   ← Racine du monorepo (workspaces + scripts)
-├── tsconfig.json                  ← Config TypeScript partagée
-├── .eslintrc.json                 ← Règles ESLint (TypeScript + React + hooks)
-└── .prettierrc                    ← Règles Prettier
+│   └── prepare_build.sh             ← Orchestre l'injection complète (CI)
+├── docs/                            ← Documentation
+├── babel.config.js                  ← Transpilation TS/TSX → JS (Jest)
+├── jest.config.js                   ← Config Jest racine (découverte auto)
+├── lerna.json                       ← Configuration Lerna v9
+├── package.json                     ← Racine du monorepo (workspaces + scripts)
+├── tsconfig.json                    ← Config TypeScript partagée
+├── .eslintrc.json                   ← Règles ESLint (TypeScript + React + hooks)
+└── .prettierrc                      ← Règles Prettier
 ```
 
 ---
@@ -63,16 +78,17 @@ cosmotech-viz-plugins/
 
 Toutes les commandes s'exécutent depuis la racine du monorepo.
 
-| Commande            | Description                                        |
-| ------------------- | -------------------------------------------------- |
-| `yarn build`        | Build production de tous les packages (CJS + ESM)  |
-| `yarn build:dev`    | Watch mode — recompile à chaque modification       |
-| `yarn test`         | Lance tous les tests unitaires                     |
-| `yarn test:watch`   | Tests en mode watch                                |
-| `yarn lint`         | Analyse ESLint sur tous les packages               |
-| `yarn format`       | Formate tous les fichiers avec Prettier            |
-| `yarn format:check` | Vérifie le formatage sans modifier (utilisé en CI) |
-| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/` |
+| Commande            | Description                                                  |
+| ------------------- | ------------------------------------------------------------ |
+| `yarn plugin:init`  | Scaffold un nouveau plugin depuis `plugin_template/`         |
+| `yarn build`        | Build production de tous les packages (CJS + ESM)            |
+| `yarn build:dev`    | Watch mode — recompile à chaque modification                 |
+| `yarn test`         | Lance tous les tests unitaires                               |
+| `yarn test:watch`   | Tests en mode watch                                          |
+| `yarn lint`         | Analyse ESLint sur tous les packages                         |
+| `yarn format`       | Formate tous les fichiers avec Prettier                      |
+| `yarn format:check` | Vérifie le formatage sans modifier (utilisé en CI)           |
+| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/`           |
 
 Pour cibler un seul package :
 
@@ -85,126 +101,96 @@ yarn workspace @cosmotech-viz/core test
 
 ## Créer un nouveau plugin
 
-### 1. Créer le dossier du plugin
+Un générateur en ligne de commande est intégré au monorepo. Il copie `plugin_template/`, remplace
+les tokens, et renomme les fichiers automatiquement.
+
+### 1. Lancer le générateur
 
 ```bash
-mkdir plugins/plugin-mon-graphique
-cd plugins/plugin-mon-graphique
+yarn plugin:init
 ```
 
-### 2. Générer le squelette avec Yeoman
+Le script pose trois questions :
+
+```
+Plugin name (kebab-case, e.g. my-chart): mon-graphique
+Display name (e.g. My Chart): Mon Graphique
+Description: Visualisation personnalisée de données
+```
+
+- **Plugin name** — identifiant kebab-case, devient le nom npm `@cosmotech-viz/plugin-<nom>` et
+  le nom du sous-dossier dans `plugins/`.
+- **Display name** — nom affiché dans l'interface Superset.
+- **Description** — description courte (readme, metadata).
+
+Le script génère `plugins/mon-graphique/` avec la structure complète :
+
+```
+plugins/mon-graphique/
+├── src/
+│   ├── MonGraphique.tsx       ← Composant React (renommé depuis __PLUGIN_CLASS_NAME__.tsx)
+│   ├── index.ts
+│   ├── types.ts
+│   ├── images/thumbnail.png
+│   └── plugin/
+│       ├── index.ts           ← Classe MonGraphiquePlugin (extends ChartPlugin)
+│       ├── buildQuery.ts
+│       ├── controlPanel.ts
+│       └── transformProps.ts
+├── test/
+│   ├── index.test.ts
+│   ├── plugin/
+│   │   ├── buildQuery.test.ts
+│   │   └── transformProps.test.ts
+│   └── __mocks__/
+│       ├── superset-ui-core.js
+│       ├── superset-ui-chart-controls.js
+│       └── mockExportString.js
+├── types/external.d.ts
+├── package.json
+├── tsconfig.json
+├── tsconfig.esm.json
+├── babel.config.js
+├── jest.config.js
+└── README.md
+```
+
+### 2. Installer les dépendances
 
 ```bash
-yo @superset-ui/superset
+yarn install
 ```
 
-Répondre aux questions du générateur (nom, type de graphique, etc.).
+Yarn Workspaces détecte automatiquement le nouveau package et installe ses dépendances.
 
-### 3. Ajouter les champs obligatoires dans `package.json`
+### 3. Vérifier le build, les tests et le lint
 
-Les scripts de CI lisent `pluginName` pour générer le Preset Superset. Le script de build utilise
-Babel pour la compilation CJS et `tsc` pour les déclarations TypeScript :
-
-```json
-{
-  "name": "@cosmotech-viz/plugin-mon-graphique",
-  "version": "0.1.0",
-  "pluginName": "MonGraphiqueChartPlugin",
-  "main": "dist/index.js",
-  "module": "esm/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "babel src --extensions '.ts,.tsx' --copy-files --out-dir dist && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
-    "build:dev": "tsc -p tsconfig.json --watch",
-    "clean": "rm -rf dist esm coverage",
-    "test": "jest --passWithNoTests",
-    "lint": "eslint src --ext .ts,.tsx"
-  },
-  "peerDependencies": {
-    "@superset-ui/chart-controls": "^0.20.3",
-    "@superset-ui/core": "^0.20.4",
-    "react": "^19.2.5",
-    "react-dom": "^19.2.5"
-  },
-  "devDependencies": {
-    "@superset-ui/chart-controls": "^0.20.3",
-    "@superset-ui/core": "^0.20.4"
-  }
-}
+```bash
+yarn workspace @cosmotech-viz/plugin-mon-graphique build
+yarn workspace @cosmotech-viz/plugin-mon-graphique test
+yarn workspace @cosmotech-viz/plugin-mon-graphique lint
 ```
+
+Ou en une seule passe depuis la racine :
+
+```bash
+yarn build && yarn test && yarn lint
+```
+
+### 4. Implémenter le plugin
+
+Le code généré est fonctionnel dès la sortie du générateur. Les fichiers à adapter en priorité :
+
+| Fichier                       | Ce qu'il faut modifier                                              |
+| ----------------------------- | ------------------------------------------------------------------- |
+| `src/MonGraphique.tsx`        | Remplacer le rendu `<pre>` par la visualisation réelle              |
+| `src/types.ts`                | Adapter les interfaces `FormData` et `Props` aux données du plugin  |
+| `src/plugin/buildQuery.ts`    | Adapter les colonnes/métriques à requêter                           |
+| `src/plugin/controlPanel.ts`  | Ajouter/modifier les contrôles du panneau Superset                  |
+| `src/plugin/transformProps.ts`| Adapter la transformation réponse API → props React                 |
 
 > **Important** : utiliser `@superset-ui/core@0.20.4` et `@superset-ui/chart-controls@0.20.3`.
-> Les versions `2.x` sont publiées sur npm sans artefacts de build (pas de `lib/`, pas de `.d.ts`)
-> — elles ne fonctionnent pas.
-
-### 4. Ajouter les fichiers de configuration TypeScript et Jest
-
-Créer `tsconfig.json` (génère uniquement les `.d.ts` dans `dist/`, Babel génère le JS) :
-
-```json
-{
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "emitDeclarationOnly": true,
-    "noImplicitAny": false,
-    "types": ["jest"]
-  },
-  "include": ["src/**/*", "types/**/*"],
-  "exclude": ["node_modules", "dist", "esm", "**/*.test.ts", "**/*.test.tsx"]
-}
-```
-
-Créer `tsconfig.esm.json` (génère le JS ESM dans `esm/`) :
-
-```json
-{
-  "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "esm",
-    "module": "ESNext",
-    "noImplicitAny": false,
-    "declaration": false,
-    "declarationMap": false
-  },
-  "include": ["src/**/*", "types/**/*"],
-  "exclude": ["node_modules", "dist", "esm", "**/*.test.ts", "**/*.test.tsx"]
-}
-```
-
-Créer `jest.config.js` avec les mocks `@superset-ui` :
-
-```js
-module.exports = {
-  displayName: '@cosmotech-viz/plugin-mon-graphique',
-  testEnvironment: 'jsdom',
-  transform: { '^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { rootMode: 'upward' }] },
-  transformIgnorePatterns: ['/node_modules/'],
-  moduleNameMapper: {
-    '^@superset-ui/core$': '<rootDir>/test/__mocks__/superset-ui-core.js',
-    '^@superset-ui/chart-controls$': '<rootDir>/test/__mocks__/superset-ui-chart-controls.js',
-    '\\.(gif|ttf|eot|png|jpg|svg)$': '<rootDir>/test/__mocks__/mockExportString.js',
-  },
-  testMatch: ['<rootDir>/test/**/*.test.{ts,tsx}'],
-  passWithNoTests: true,
-};
-```
-
-Copier les fichiers `test/__mocks__/` depuis `plugins/hello-world/test/__mocks__/` comme point de
-départ et adapter les exports mockés au besoin.
-
-### 5. Vérifier le build
-
-```bash
-cd ../..
-yarn build
-yarn lint
-yarn test
-```
-
----
+> Les versions `2.x` sont publiées sur npm sans artefacts de build — elles ne fonctionnent pas.
 
 ## Anatomie d'un plugin
 
@@ -219,27 +205,34 @@ plugins/plugin-mon-graphique/src/
 └── MonGraphique.tsx    ← Composant React qui effectue le rendu
 ```
 
-**Classe Plugin (`index.ts`)** :
+**Classe Plugin (`src/plugin/index.ts`)** :
 
 ```typescript
-import { ChartPlugin } from '@superset-ui/core';
+import { ChartPlugin, ChartMetadata } from '@superset-ui/core';
 import buildQuery from './buildQuery';
 import controlPanel from './controlPanel';
 import transformProps from './transformProps';
-import MonGraphique from './MonGraphique';
+import thumbnail from '../images/thumbnail.png';
 
-export default class MonGraphiqueChartPlugin extends ChartPlugin {
+export default class MonGraphiquePlugin extends ChartPlugin {
   constructor() {
     super({
       buildQuery,
       controlPanel,
-      loadChart: () => MonGraphique,
-      metadata: { name: 'Mon Graphique', thumbnail: '' },
+      loadChart: () => import('../MonGraphique'),  // chargement dynamique
+      metadata: new ChartMetadata({
+        description: 'Visualisation personnalisée',
+        name: 'Mon Graphique',
+        thumbnail,
+      }),
       transformProps,
     });
   }
 }
 ```
+
+> Utiliser `loadChart: () => import('../MonGraphique')` (import dynamique) plutôt que
+> `loadChart: () => MonGraphique` pour le code-splitting Superset.
 
 ---
 

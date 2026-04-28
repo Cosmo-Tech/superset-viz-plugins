@@ -16,7 +16,8 @@
     "lint": "lerna run lint",
     "lint:root": "eslint . --ext .ts,.tsx,.js --ignore-path .eslintignore",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\" --ignore-path .prettierignore",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\" --ignore-path .prettierignore"
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\" --ignore-path .prettierignore",
+    "plugin:init": "node scripts/initPlugin.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.7",
