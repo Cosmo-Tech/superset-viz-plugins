@@ -22,22 +22,64 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+  # ── Job 1: Publish each plugin to npm (parallel matrix) ─────────────────────
+  publish:
+    name: Publish @cosmotech/plugin-${{ matrix.plugin }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # ── Add new plugin folder names here after running `yarn plugin:init` ──
+        plugin:
+          - hello-world
+
+    steps:
+      # ── 1. Checkout this monorepo ────────────────────────────────────────────
+      - name: Checkout cosmotech-viz-plugins
+        uses: actions/checkout@v4
+
+      # ── 2. Setup Node.js ─────────────────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'yarn'
+          registry-url: 'https://registry.npmjs.org'
+
+      # ── 3. Install dependencies ──────────────────────────────────────────────
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      # ── 4. Build the plugin ──────────────────────────────────────────────────
+      - name: Build plugin
+        run: yarn workspace @cosmotech/plugin-${{ matrix.plugin }} build
+
+      # ── 5. Publish to npm ────────────────────────────────────────────────────
+      - name: Publish to npm
+        working-directory: plugins/${{ matrix.plugin }}
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # ── Job 2: Inject plugins into Superset and push Docker image ───────────────
   release:
     name: Inject plugins into Superset and push Docker image
     runs-on: ubuntu-latest
+    needs: publish
 
     permissions:
       contents: read
       packages: write
 
     steps:
-      # ── 1. Checkout this monorepo ──────────────────────────────────────────
+      # ── 1. Checkout this monorepo ────────────────────────────────────────────
       - name: Checkout cosmotech-viz-plugins
         uses: actions/checkout@v4
         with:
           path: ${{ env.PROJECT_WORKING_DIRECTORY }}
 
-      # ── 2. Checkout apache/superset at the pinned version ─────────────────
+      # ── 2. Checkout apache/superset at the pinned version ────────────────────
       - name: Checkout apache/superset ${{ env.SUPERSET_VERSION }}
         uses: actions/checkout@v4
         with:
@@ -46,7 +88,7 @@ jobs:
           fetch-tags: true
           path: superset
 
-      # ── 3. Setup Node.js ──────────────────────────────────────────────────
+      # ── 3. Setup Node.js ─────────────────────────────────────────────────────
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -54,20 +96,11 @@ jobs:
           cache: 'yarn'
           registry-url: 'https://registry.npmjs.org'
 
-      # ── 4. Install & build plugins ────────────────────────────────────────
+      # ── 4. Install monorepo dependencies ─────────────────────────────────────
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Build plugins
-        run: yarn build
-
-      # ── 5. Publish packages to npm ────────────────────────────────────────
-      - name: Publish packages
-        run: yarn publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      # ── 6. Inject plugins into the Superset frontend ──────────────────────
+      # ── 5. Inject plugins into the Superset frontend ─────────────────────────
       - name: Prepare Superset build
         run: ./scripts/prepare_build.sh
         env:
@@ -76,7 +109,7 @@ jobs:
           PRESET_NAME: ${{ env.PRESET_NAME }}
           PLUGINS_EXTRA_FILENAME: ${{ env.PLUGINS_EXTRA_FILENAME }}
 
-      # ── 7. Build and push custom Superset Docker image ────────────────────
+      # ── 6. Build and push custom Superset Docker image ───────────────────────
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
