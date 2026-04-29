@@ -59,8 +59,23 @@ jobs:
       - name: Build plugin
         run: yarn workspace @cosmotech/plugin-${{ matrix.plugin }} build
 
-      # ── 5. Publish to npm ────────────────────────────────────────────────────
+      # ── 5. Check if version already exists on npm ──────────────────────────
+      - name: Check if version is already published
+        id: check-version
+        working-directory: plugins/${{ matrix.plugin }}
+        run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if npm view "${PKG_NAME}@${PKG_VERSION}" version >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::${PKG_NAME}@${PKG_VERSION} already exists on npm — skipping publish."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── 6. Publish to npm ────────────────────────────────────────────────────
       - name: Publish to npm
+        if: steps.check-version.outputs.exists == 'false'
         working-directory: plugins/${{ matrix.plugin }}
         run: npm publish --access public
 
