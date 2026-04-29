@@ -1,6 +1,6 @@
 {
   "name": "@cosmotech/plugin-hello-world",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Simple Plugin that display \"Hello World\"",
   "pluginName": "HelloWorld",
   "sideEffects": false,
@@ -37,5 +37,22 @@
     "@types/jest": "^29.5.12",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cosmo-Tech/cosmotech-viz-plugins.git"
+  },
+  "keywords": [
+    "superset",
+    "chart",
+    "demo",
+    "hello-world"
+  ],
+  "bugs": {
+    "url": "https://github.com/Cosmo-Tech/cosmotech-viz-plugins/issues"
+  },
+  "homepage": "https://github.com/Cosmo-Tech/cosmotech-viz-plugins#readme"
 }
