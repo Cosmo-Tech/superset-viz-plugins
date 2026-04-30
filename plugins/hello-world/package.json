@@ -1,6 +1,6 @@
 {
   "name": "@cosmotech/plugin-hello-world",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "description": "Simple Plugin that display \"Hello World\"",
   "pluginName": "HelloWorld",
   "sideEffects": false,
@@ -19,7 +19,7 @@
     "test:watch": "jest --watch",
     "lint": "eslint src --ext .ts,.tsx"
   },
-  "author": "My Name",
+  "author": "jreynard-code",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"
