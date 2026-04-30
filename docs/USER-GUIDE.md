@@ -28,11 +28,11 @@ Les plugins sont publiés sur npm sous le scope `@cosmotech/`. Chaque plugin dan
 
 La méthode recommandée est de déployer l'image Docker préconfigurée, qui intègre Superset avec
 les plugins déjà installés et enregistrés. L'image est automatiquement construite et publiée sur
-DockerHub à chaque release.
+le GitHub Container Registry (GHCR) à chaque release.
 
 ```bash
-docker pull <nom-de-limage>:<version>
-docker run -p 8088:8088 <nom-de-limage>:<version>
+docker pull ghcr.io/cosmo-tech/cosmotech-superset:latest
+docker run -p 8088:8088 ghcr.io/cosmo-tech/cosmotech-superset:latest
 ```
 
 Superset est ensuite accessible sur `http://localhost:8088`.

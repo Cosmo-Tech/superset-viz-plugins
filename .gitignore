@@ -69,4 +69,3 @@ plugins/*/dist
 plugins/*/esm
 /.idea/
 
-.npmrc

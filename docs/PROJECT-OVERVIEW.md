@@ -19,16 +19,16 @@ cosmotech-viz-plugins/
 │   └── core/                 ← Package de composants partagés entre plugins
 ├── scripts/                  ← Scripts de build/release vers Superset
 │   ├── initPlugin.js         ← Génère un nouveau plugin depuis plugin_template/
-│   ├── addDependencies.js
+│   ├── addDependencies.js    ← Injecte les plugins dans le package.json cible
 │   ├── copyAssets.js
-│   ├── generatePreset.js
+│   ├── generatePreset.js     ← Injecte les imports/instanciations dans MainPreset.js
 │   ├── generateSetupPluginsExtra.js
 │   └── prepare_build.sh
 ├── docs/                     ← Documentation du projet
 ├── .github/
 │   └── workflows/
 │       ├── ci.yml            ← Build + Lint + Format check + Test (tout push/PR)
-│       └── release.yml       ← (futur) npm publish + Docker push
+│       └── release.yml       ← npm publish (matrix) + Docker push (push sur main)
 ├── package.json              ← Racine du monorepo
 ├── lerna.json                ← Configuration Lerna pour la gestion du monorepo
 └── tsconfig.json             ← Configuration TypeScript partagée
@@ -40,7 +40,7 @@ cosmotech-viz-plugins/
 
 | Outil                           | Version     | Rôle                                                           |
 | ------------------------------- | ----------- | -------------------------------------------------------------- |
-| **TypeScript**                  | 5.9.x       | Langage principal de tous les plugins                          |
+| **TypeScript**                  | 5.1.x       | Langage principal de tous les plugins                          |
 | **React 19**                    | 19.x        | Framework UI des composants de visualisation                   |
 | **recharts**                    | 2.x         | Bibliothèque de graphiques SVG basée sur React                 |
 | **@superset-ui/core**           | 0.20.4      | Types et utilitaires du SDK Superset                           |
@@ -48,7 +48,7 @@ cosmotech-viz-plugins/
 | **Lerna v9**                    | 9.x         | Orchestration du monorepo (scripts, versions, publication npm) |
 | **Babel**                       | 7.x         | Transpilation TypeScript/TSX → JavaScript CommonJS             |
 | **Jest + @testing-library**     | 29.x / 16.x | Tests unitaires                                                |
-| **ESLint + Prettier**           | 8.x / 3.x   | Lint et formatage du code                                      |
+| **ESLint + Prettier**           | 7.x / 3.x   | Lint et formatage du code                                      |
 
 ---
 
@@ -66,14 +66,18 @@ cosmotech-viz-plugins/
 │  └── yarn install + yarn build + yarn lint                      │
 │      + yarn format:check + yarn test                            │
 └──────────────────────────┬──────────────────────────────────────┘
-                           │ (si branche master)
+                           │ (si branche main)
                            ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │  GitHub Actions — release.yml                                   │
-│  ├── Build des plugins                                          │
-│  ├── Publication des packages sur npm                           │
-│  ├── Injection des plugins dans apache/superset                 │
-│  └── Build et push d'une image Docker sur DockerHub             │
+│  Job 1 (publish) — matrice parallèle par plugin :                │
+│  ├── Build du plugin                                              │
+│  ├── Vérification si la version existe déjà sur npm               │
+│  ├── Détermination du dist-tag (latest, beta, alpha…)            │
+│  └── Publication npm (`npm publish --tag <dist-tag>`)             │
+│  Job 2 (release) — après publish :                               │
+│  ├── Injection des plugins dans apache/superset                  │
+│  └── Build et push d'une image Docker sur GHCR                    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 

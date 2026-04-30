@@ -35,7 +35,7 @@ yarn --version   # doit afficher 1.22.x ou supérieur
 
 | Outil                           | Version | Rôle                                           |
 | ------------------------------- | ------- | ---------------------------------------------- |
-| **TypeScript**                  | 5.9.x   | Langage principal                              |
+| **TypeScript**                  | 5.1.x   | Langage principal                              |
 | **React**                       | 19.x    | Framework UI des composants de visualisation   |
 | **recharts**                    | 2.x     | Bibliothèque de graphiques SVG basée sur React |
 | **@superset-ui/core**           | 0.20.4  | Types et utilitaires du SDK Superset           |
@@ -43,7 +43,7 @@ yarn --version   # doit afficher 1.22.x ou supérieur
 | **Lerna v9**                    | 9.x     | Orchestration du monorepo                      |
 | **Babel**                       | 7.x     | Transpilation TypeScript/TSX → JavaScript      |
 | **Jest + @testing-library**     | 29.x    | Tests unitaires                                |
-| **ESLint + Prettier**           | 8.x/3.x | Lint et formatage du code                      |
+| **ESLint + Prettier**           | 7.x/3.x | Lint et formatage du code                      |
 
 ---
 
@@ -63,16 +63,17 @@ Yarn Workspaces installe toutes les dépendances de la racine et de chaque packa
 
 Toutes les commandes s'exécutent depuis la **racine du monorepo**.
 
-| Commande            | Description                                        |
-| ------------------- | -------------------------------------------------- |
-| `yarn build`        | Build production de tous les packages (CJS + ESM)  |
-| `yarn build:dev`    | Watch mode — recompile à chaque modification       |
-| `yarn test`         | Lance tous les tests unitaires                     |
-| `yarn test:watch`   | Tests en mode watch                                |
-| `yarn lint`         | Analyse ESLint sur tous les packages               |
-| `yarn format`       | Formate tous les fichiers avec Prettier            |
-| `yarn format:check` | Vérifie le formatage sans modifier (CI)            |
-| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/` |
+| Commande            | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| `yarn build`        | Build production de tous les packages (CJS + ESM)     |
+| `yarn build:dev`    | Watch mode — recompile à chaque modification          |
+| `yarn test`         | Lance tous les tests unitaires                        |
+| `yarn test:watch`   | Tests en mode watch                                   |
+| `yarn lint`         | Analyse ESLint sur tous les packages                  |
+| `yarn format`       | Formate tous les fichiers avec Prettier               |
+| `yarn format:check` | Vérifie le formatage sans modifier (CI)               |
+| `yarn plugin:init`  | Scaffolde un nouveau plugin depuis `plugin_template/` |
+| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/`    |
 
 ---
 

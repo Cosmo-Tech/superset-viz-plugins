@@ -12,7 +12,7 @@
     "esm"
   ],
   "scripts": {
-    "build": "babel src --extensions '.ts,.tsx' --copy-files --out-dir dist && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
+    "build": "babel src --extensions '.ts,.tsx' --copy-files --out-dir dist && tsc -p tsconfig.json && tsc -p tsconfig.esm.json && cp -r src/images esm/images",
     "build:dev": "tsc -p tsconfig.json --watch",
     "clean": "rm -rf dist esm coverage",
     "test": "jest --passWithNoTests",

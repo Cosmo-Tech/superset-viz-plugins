@@ -2,23 +2,29 @@
 set -e
 bash --version
 
-echo $GITHUB_WORKSPACE
+echo Viz dir: $GITHUB_WORKSPACE
+ls -al $GITHUB_WORKSPACE
+
+echo Superset dir: $GITHUB_WORKSPACE/superset
+ls -al $GITHUB_WORKSPACE/superset
 
 # Add dependencies superset-frontend and generate the preset
-cp .npmrc $GITHUB_WORKSPACE/superset/superset-frontend/.npmrc
-cd $GITHUB_WORKSPACE/superset/superset-frontend
+cp .npmrc ./superset/superset-frontend/.npmrc
 
 # add dependencies to package.json
-node $GITHUB_WORKSPACE/$PROJECT_WORKING_DIRECTORY/scripts/addDependencies.js
+node ./scripts/addDependencies.js superset/superset-frontend/package.json
 
 # generate preset file and locate in incubator source code
-node $GITHUB_WORKSPACE/$PROJECT_WORKING_DIRECTORY/scripts/generatePreset.js
-mv "./${PRESET_NAME}Preset.ts" "./src/visualizations/presets/${PRESET_NAME}Preset.js"
+node ./scripts/generatePreset.js superset/superset-frontend/src/visualizations/presets/MainPreset.js
 
+cat "superset/superset-frontend/src/visualizations/presets/MainPreset.js"
 # generate setupPluginsExtra override in incubator source code
-node $GITHUB_WORKSPACE/$PROJECT_WORKING_DIRECTORY/scripts/generateSetupPluginsExtra.js
-mv "./${PLUGINS_EXTRA_FILENAME}" "src/setup/${PLUGINS_EXTRA_FILENAME}"
+# node ./scripts/generateSetupPluginsExtra.js
+#mv "${PLUGINS_EXTRA_FILENAME}" "superset/superset-frontend/src/setup/${PLUGINS_EXTRA_FILENAME}"
+#cat "superset/superset-frontend/src/setup/${PLUGINS_EXTRA_FILENAME}"
+
+cd superset/superset-frontend
 
 npm install
 
-yarn lint-fix
+#yarn lint-fix

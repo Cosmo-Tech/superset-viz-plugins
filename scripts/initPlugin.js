@@ -231,6 +231,16 @@ async function main() {
     fileCount++;
   }
 
+  // Generate thumbnail.ts from thumbnail.png (base64 data URL)
+  const thumbnailPng = path.join(targetDir, 'src', 'images', 'thumbnail.png');
+  const thumbnailTs = path.join(targetDir, 'src', 'images', 'thumbnail.ts');
+  if (fs.existsSync(thumbnailPng)) {
+    const imgData = fs.readFileSync(thumbnailPng);
+    const b64 = imgData.toString('base64');
+    const tsContent = `const thumbnail = "data:image/png;base64,${b64}";\nexport default thumbnail;\n`;
+    fs.writeFileSync(thumbnailTs, tsContent, 'utf8');
+  }
+
   // Register the new plugin in the release workflow matrix
   addPluginToMatrix(packageName, rootDir);
 

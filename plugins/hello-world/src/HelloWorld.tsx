@@ -28,7 +28,7 @@ import { HelloWorldProps, HelloWorldStylesProps } from './types';
 // https://github.com/apache-superset/superset-ui/blob/master/packages/superset-ui-core/src/style/index.ts
 
 const Styles = styled.div<HelloWorldStylesProps>`
-  background-color: ${({ theme }) => theme.colors.secondary.light2};
+  background-color: red;
   padding: ${({ theme }) => theme.gridUnit * 4}px;
   border-radius: ${({ theme }) => theme.gridUnit * 2}px;
   height: ${({ height }) => height}px;
@@ -37,14 +37,13 @@ const Styles = styled.div<HelloWorldStylesProps>`
   h3 {
     /* You can use your props to control CSS! */
     margin-top: 0;
-    margin-bottom: ${({ theme }) => theme.gridUnit * 3}px;
-    font-size: ${({ theme, headerFontSize }) => theme.typography.sizes[headerFontSize]}px;
-    font-weight: ${({ theme, boldText }) => theme.typography.weights[boldText ? 'bold' : 'normal']};
+    margin-bottom: 5px;
+    font-size: 10px;
+    font-weight: 'bold';
   }
 
   pre {
-    height: ${({ theme, headerFontSize, height }) =>
-      height - theme.gridUnit * 12 - theme.typography.sizes[headerFontSize]}px;
+    height: ${({ theme, height }) => height - theme.gridUnit * 12 - 2}px;
   }
 `;
 
@@ -76,7 +75,7 @@ export default function HelloWorld(props: HelloWorldProps) {
     <Styles
       ref={rootElem}
       boldText={props.boldText}
-      headerFontSize={props.headerFontSize}
+      headerFontSize="xs"
       height={height}
       width={width}
     >

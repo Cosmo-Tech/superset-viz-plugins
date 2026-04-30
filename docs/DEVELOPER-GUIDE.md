@@ -133,6 +133,7 @@ plugins/mon-graphique/
 │   ├── index.ts
 │   ├── types.ts
 │   ├── images/thumbnail.png
+│   ├── images/thumbnail.ts   ← Thumbnail encodé en base64 (généré automatiquement)
 │   └── plugin/
 │       ├── index.ts           ← Classe MonGraphiquePlugin (extends ChartPlugin)
 │       ├── buildQuery.ts
@@ -213,7 +214,7 @@ import { ChartPlugin, ChartMetadata } from '@superset-ui/core';
 import buildQuery from './buildQuery';
 import controlPanel from './controlPanel';
 import transformProps from './transformProps';
-import thumbnail from '../images/thumbnail.png';
+import thumbnail from '../images/thumbnail';
 
 export default class MonGraphiquePlugin extends ChartPlugin {
   constructor() {
@@ -306,7 +307,7 @@ test('renders without crashing', () => {
 Le `tsconfig.json` racine est la base partagée. Chaque package l'étend avec
 `"extends": "../../tsconfig.json"`.
 
-**Stratégie de build pour les plugins** (TypeScript 5.9 impose une contrainte stricte) :
+**Stratégie de build pour les plugins** (TypeScript 5.1 impose une contrainte stricte) :
 
 | Fichier             | Rôle                                                          | Outil |
 | ------------------- | ------------------------------------------------------------- | ----- |
@@ -314,7 +315,7 @@ Le `tsconfig.json` racine est la base partagée. Chaque package l'étend avec
 | `tsconfig.esm.json` | Génère le JS ESM dans `esm/` (`module: ESNext`)               | `tsc` |
 | `babel.config.js`   | Génère le JS CommonJS dans `dist/` (sans contrôle de type)    | Babel |
 
-> TypeScript 5.9 interdit `module: CommonJS` avec `moduleResolution: bundler`. Le root
+> TypeScript 5.1 interdit `module: CommonJS` avec `moduleResolution: bundler`. Le root
 > tsconfig utilise `moduleResolution: bundler` + `module: ESNext`. Pour éviter le conflit,
 > `emitDeclarationOnly: true` fait que `tsc` ne génère que les `.d.ts`, pas de JS. Babel
 > se charge de la transpilation CJS.
@@ -372,8 +373,35 @@ yarn build && yarn lint && yarn format:check && yarn test
 
 ### Workflow de release — `.github/workflows/release.yml`
 
-Pas encore créé. Il sera détaillé ultérieurement et prendra en charge : publication npm,
-injection Superset et build/push Docker.
+Déclenché automatiquement sur **push sur la branche main**.
+
+```
+trigger : push sur main
+runner  : ubuntu-latest, Node.js 20
+
+Job 1 — publish (matrice parallèle par plugin) :
+  1. Checkout du code
+  2. Setup Node.js 20 (avec cache Yarn + registry npm)
+  3. yarn install --frozen-lockfile
+  4. yarn workspace @cosmotech/plugin-<name> build
+  5. Vérification si la version existe déjà sur npm
+  6. Détermination du dist-tag (latest, beta, alpha…)
+  7. npm publish --access public --tag <dist-tag>
+
+Job 2 — release (après publish) :
+  1. Checkout monorepo + checkout apache/superset
+  2. yarn install --frozen-lockfile
+  3. Injection des plugins dans Superset (prepare_build.sh)
+  4. Build et push de l'image Docker sur GHCR
+```
+
+La matrice `plugin:` dans `release.yml` est mise à jour automatiquement par `yarn plugin:init`.
+Chaque nouveau plugin ajouté est publié en parallèle avec `fail-fast: false`.
+
+Secrets requis :
+
+- `NPM_TOKEN` — token npm pour la publication
+- `GITHUB_TOKEN` — fourni automatiquement par GitHub Actions (utilisé pour GHCR)
 
 ### Variables d'environnement requises en CI
 

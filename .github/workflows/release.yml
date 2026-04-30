@@ -7,10 +7,10 @@ on:
 
 env:
   # ── Monorepo ──────────────────────────────────────────────────────────────
-  PROJECT_WORKING_DIRECTORY: .
+  PROJECT_WORKING_DIRECTORY: cosmotech-viz-plugins
 
   # ── Apache Superset ───────────────────────────────────────────────────────
-  SUPERSET_VERSION: '5.0.0'
+  SUPERSET_VERSION: '6.0.0'
   SUPERSET_REPO: apache/superset
 
   # ── Plugin injection ──────────────────────────────────────────────────────
@@ -47,7 +47,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
           cache: 'yarn'
           registry-url: 'https://registry.npmjs.org'
 
@@ -107,8 +107,6 @@ jobs:
       # ── 1. Checkout this monorepo ────────────────────────────────────────────
       - name: Checkout cosmotech-viz-plugins
         uses: actions/checkout@v4
-        with:
-          path: ${{ env.PROJECT_WORKING_DIRECTORY }}
 
       # ── 2. Checkout apache/superset at the pinned version ────────────────────
       - name: Checkout apache/superset ${{ env.SUPERSET_VERSION }}
@@ -123,8 +121,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'yarn'
+          node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
       # ── 4. Install monorepo dependencies ─────────────────────────────────────
@@ -133,7 +130,7 @@ jobs:
 
       # ── 5. Inject plugins into the Superset frontend ─────────────────────────
       - name: Prepare Superset build
-        run: ./scripts/prepare_build.sh
+        run: sh ./scripts/prepare_build.sh
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
           PROJECT_WORKING_DIRECTORY: ${{ env.PROJECT_WORKING_DIRECTORY }}
