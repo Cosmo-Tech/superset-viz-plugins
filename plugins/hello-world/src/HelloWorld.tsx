@@ -16,71 +16,87 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { useEffect, createRef } from 'react';
 import { styled } from '@superset-ui/core';
 import { HelloWorldProps, HelloWorldStylesProps } from './types';
 
-// The following Styles component is a <div> element, which has been styled using Emotion
-// For docs, visit https://emotion.sh/docs/styled
-
-// Theming variables are provided for your use via a ThemeProvider
-// imported from @superset-ui/core. For variables available, please visit
-// https://github.com/apache-superset/superset-ui/blob/master/packages/superset-ui-core/src/style/index.ts
-
 const Styles = styled.div<HelloWorldStylesProps>`
-  background-color: red;
   padding: ${({ theme }) => theme.gridUnit * 4}px;
   border-radius: ${({ theme }) => theme.gridUnit * 2}px;
   height: ${({ height }) => height}px;
   width: ${({ width }) => width}px;
+  overflow: auto;
+  font-family: ${({ theme }) => theme.typography.families.sansSerif};
 
-  h3 {
-    /* You can use your props to control CSS! */
-    margin-top: 0;
-    margin-bottom: 5px;
-    font-size: 10px;
-    font-weight: 'bold';
+  h1 {
+    margin: 0 0 ${({ theme }) => theme.gridUnit * 3}px 0;
+    font-size: ${({ theme }) => theme.typography.sizes.xxl}px;
+    font-weight: ${({ boldText }) => (boldText ? 700 : 400)};
+    text-align: center;
   }
 
-  pre {
-    height: ${({ theme, height }) => height - theme.gridUnit * 12 - 2}px;
+  .wave-image {
+    display: block;
+    margin: 0 auto ${({ theme }) => theme.gridUnit * 3}px;
+    font-size: 64px;
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: ${({ theme }) => theme.typography.sizes.m}px;
+  }
+
+  thead th {
+    background-color: ${({ theme }) => theme.colors.grayscale.light4};
+    color: ${({ theme }) => theme.colors.grayscale.dark2};
+    text-align: left;
+    padding: ${({ theme }) => theme.gridUnit * 2}px;
+    border-bottom: 2px solid ${({ theme }) => theme.colors.grayscale.light2};
+    white-space: nowrap;
+  }
+
+  tbody td {
+    padding: ${({ theme }) => theme.gridUnit * 2}px;
+    border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale.light3};
+  }
+
+  tbody tr:hover {
+    background-color: ${({ theme }) => theme.colors.grayscale.light5};
   }
 `;
 
-/**
- * ******************* WHAT YOU CAN BUILD HERE *******************
- *  In essence, a chart is given a few key ingredients to work with:
- *  * Data: provided via `props.data`
- *  * A DOM element
- *  * FormData (your controls!) provided as props by transformProps.ts
- */
-
 export default function HelloWorld(props: HelloWorldProps) {
-  // height and width are the height and width of the DOM element as it exists in the dashboard.
-  // There is also a `data` prop, which is, of course, your DATA 🎉
   const { data, height, width } = props;
 
-  const rootElem = createRef<HTMLDivElement>();
-
-  // Often, you just want to access the DOM and do whatever you want.
-  // Here, you can do that with createRef, and the useEffect hook.
-  useEffect(() => {
-    const root = rootElem.current as HTMLElement;
-    console.log('Plugin element', root);
-  });
-
-  console.log('Plugin props', props);
+  const columns = data.length > 0 ? Object.keys(data[0]) : [];
 
   return (
-    <Styles
-      ref={rootElem}
-      boldText={props.boldText}
-      headerFontSize="xs"
-      height={height}
-      width={width}
-    >
-      <h3>{props.headerText}</h3>
-      <pre>${JSON.stringify(data, null, 2)}</pre>
+    <Styles boldText={props.boldText} headerFontSize="xs" height={height} width={width}>
+      <h1>Hello World</h1>
+      <div className="wave-image" role="img" aria-label="Person waving">
+        👋🧑
+      </div>
+      {data.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              {columns.map((col) => (
+                <th key={col}>{col}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((row, idx) => (
+              <tr key={idx}>
+                {columns.map((col) => (
+                  <td key={col}>{row[col] != null ? String(row[col]) : ''}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </Styles>
   );
 }
