@@ -29,7 +29,7 @@ jobs:
 
     permissions:
       contents: read
-      packages: write
+      id-token: write
 
     strategy:
       fail-fast: false
@@ -88,11 +88,20 @@ jobs:
             echo "tag=latest" >> "$GITHUB_OUTPUT"
           fi
 
+      # Ensure npm 11.5.1 or later for trusted publishing
+      - run: npm install -g npm@latest
+      
       # ── 7. Publish to npm ────────────────────────────────────────────────────
       - name: Publish to npm
         if: steps.check-version.outputs.exists == 'false'
         working-directory: plugins/${{ matrix.plugin }}
-        run: npm publish --access public --tag ${{ steps.dist-tag.outputs.tag }}
+        run: |
+          PKG_NAME=$(node -p "require('./package.json').name")
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          echo "Publishing ${PKG_NAME}@${PKG_VERSION} with dist-tag '${{ steps.dist-tag.outputs.tag }}'..."
+          yarn version --new-version $PKG_VERSION --no-git-tag-version
+          yarn install --frozen-lockfile
+          npm publish --access public --tag ${{ steps.dist-tag.outputs.tag }}
 
   # ── Job 2: Inject plugins into Superset and push Docker image ───────────────
   release:
