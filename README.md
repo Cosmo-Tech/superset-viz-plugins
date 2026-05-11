@@ -172,6 +172,6 @@ cosmotech-viz-plugins/
 | Document                                             | Audience     | Contenu                                                     |
 | ---------------------------------------------------- | ------------ | ----------------------------------------------------------- |
 | [docs/PROJECT-OVERVIEW.md](docs/PROJECT-OVERVIEW.md) | Tous         | Architecture, stack, flux CI/CD                             |
-| [docs/DEVELOPER-GUIDE.md](docs/DEVELOPER-GUIDE.md)   | Développeurs | Onboarding, créer un plugin, conventions, TypeScript, tests |
+| [docs/DEVELOPER-JOURNEY.md](docs/DEVELOPER-JOURNEY.md)   | Développeurs | Onboarding, créer un plugin, conventions, TypeScript, tests |
 | [docs/USER-GUIDE.md](docs/USER-GUIDE.md)             | Utilisateurs | Déploiement Docker, intégration Superset, utilisation UI    |
 | [docs/AGENT-CONTEXT.md](docs/AGENT-CONTEXT.md)       | Agents IA    | Contraintes techniques, templates de code, problèmes connus |
