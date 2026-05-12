@@ -37,6 +37,7 @@ jobs:
         # ── Add new plugin folder names here after running `yarn plugin:init` ──
         plugin:
           - hello-world
+          - organizational-chart
 
     steps:
       # ── 1. Checkout this monorepo ────────────────────────────────────────────
