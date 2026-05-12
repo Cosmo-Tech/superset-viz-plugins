@@ -303,6 +303,17 @@ export default class MonGraphiquePlugin extends ChartPlugin {
 > Utiliser `loadChart: () => import('../MonGraphique')` (import dynamique) plutôt que
 > `loadChart: () => MonGraphique` pour le code-splitting Superset.
 
+### Note sur le thème Superset 6.0.0
+
+Superset 6.0.0 a migré vers un système de thème basé sur les **tokens Ant Design v5**.
+L'ancien API imbriqué (`theme.gridUnit`, `theme.typography.*`, `theme.colors.grayscale.*`)
+exporté par `@superset-ui/core@0.20.4` **n'existe plus au runtime**.
+
+Pour éviter les erreurs de type `Cannot read properties of undefined`, le composant React
+du plugin doit utiliser des **styles inline** (`React.CSSProperties`) plutôt que le
+`styled` de `@superset-ui/core`. Cette approche est compatible avec toutes les versions
+de Superset.
+
 ---
 
 ## 7 — Build et tests locaux
@@ -334,7 +345,7 @@ Babel se charge de la transpilation CJS.
 
 Options TypeScript activées : `strict`, `noUnusedLocals`, `noUnusedParameters`,
 `noImplicitReturns`. Les plugins ajoutent `noImplicitAny: false` pour la compatibilité avec
-les template literals Emotion.
+les dépendances `@superset-ui/core` dont certains types ne sont pas complets.
 
 ### Lancer les tests
 

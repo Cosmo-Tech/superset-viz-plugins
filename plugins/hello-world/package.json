@@ -1,6 +1,6 @@
 {
   "name": "@cosmotech/plugin-hello-world",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Simple Plugin that display \"Hello World\"",
   "pluginName": "HelloWorld",
   "sideEffects": false,

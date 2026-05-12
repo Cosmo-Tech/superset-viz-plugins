@@ -467,7 +467,7 @@ export default controlPanel;
 - Do NOT add `eslint-disable-next-line import/prefer-default-export` in source files — `eslint-plugin-import` is not installed.
 - Babel `--copy-files` flag in the build script copies non-TS files (images, JSON) into `dist/`.
 - The build script includes `cp -r src/images esm/images` to copy images to the ESM output (tsc does not copy non-TS files).
-- **Superset 5+ theme**: `theme.colors.secondary` no longer exists. Use `theme.colors.grayscale` instead (e.g. `theme.colors.grayscale.light4`).
+- **Superset 6.0.0 theme**: The old nested theme API (`theme.gridUnit`, `theme.typography.*`, `theme.colors.*`) from `@superset-ui/core@0.20.4` no longer exists at runtime. Superset 6.0.0 uses flat Ant Design v5 tokens (e.g. `theme.fontFamily`, `theme.fontSize`, `theme.padding`, `theme.colorText`). Plugins should avoid `styled` from `@superset-ui/core` and use inline React styles instead to remain compatible across Superset versions.
 - `.prettierignore` excludes `plugin_template/src`, `plugin_template/test`, and `plugin_template/types` — these directories contain `{{TOKEN}}` placeholders that are not valid TypeScript/TSX syntax and cannot be parsed by Prettier. Config files in `plugin_template/` root (`package.json`, `jest.config.js`, `README.md`) are still checked.
 
 ---

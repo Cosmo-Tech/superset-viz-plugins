@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { QueryFormData, supersetTheme, TimeseriesDataRecord } from '@superset-ui/core';
+import { QueryFormData, TimeseriesDataRecord } from '@superset-ui/core';
 
 export interface HelloWorldStylesProps {
   height: number;
   width: number;
-  headerFontSize: keyof typeof supersetTheme.typography.sizes;
+  headerFontSize: string;
   boldText: boolean;
 }
 
@@ -36,5 +36,4 @@ export type HelloWorldQueryFormData = QueryFormData &
 export type HelloWorldProps = HelloWorldStylesProps &
   HelloWorldCustomizeProps & {
     data: TimeseriesDataRecord[];
-    // add typing here for the props you pass in from transformProps.ts!
   };

@@ -16,73 +16,91 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { styled } from '@superset-ui/core';
-import { HelloWorldProps, HelloWorldStylesProps } from './types';
+import { CSSProperties } from 'react';
+import { HelloWorldProps } from './types';
 
-const Styles = styled.div<HelloWorldStylesProps>`
-  padding: ${({ theme }) => theme.gridUnit * 4}px;
-  border-radius: ${({ theme }) => theme.gridUnit * 2}px;
-  height: ${({ height }) => height}px;
-  width: ${({ width }) => width}px;
-  overflow: auto;
-  font-family: ${({ theme }) => theme.typography.families.sansSerif};
+/**
+ * Font size mapping for the header_font_size control panel selector.
+ * These values are independent of the Superset theme to avoid compatibility
+ * issues between @superset-ui/core versions and Superset runtime.
+ */
+const FONT_SIZES: Record<string, number> = {
+  xxs: 9,
+  xs: 10,
+  s: 12,
+  m: 14,
+  l: 16,
+  xl: 20,
+  xxl: 28,
+};
 
-  h1 {
-    margin: 0 0 ${({ theme }) => theme.gridUnit * 3}px 0;
-    font-size: ${({ theme }) => theme.typography.sizes.xxl}px;
-    font-weight: ${({ boldText }) => (boldText ? 700 : 400)};
-    text-align: center;
-  }
-
-  .wave-image {
-    display: block;
-    margin: 0 auto ${({ theme }) => theme.gridUnit * 3}px;
-    font-size: 64px;
-    text-align: center;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: ${({ theme }) => theme.typography.sizes.m}px;
-  }
-
-  thead th {
-    background-color: ${({ theme }) => theme.colors.grayscale.light4};
-    color: ${({ theme }) => theme.colors.grayscale.dark2};
-    text-align: left;
-    padding: ${({ theme }) => theme.gridUnit * 2}px;
-    border-bottom: 2px solid ${({ theme }) => theme.colors.grayscale.light2};
-    white-space: nowrap;
-  }
-
-  tbody td {
-    padding: ${({ theme }) => theme.gridUnit * 2}px;
-    border-bottom: 1px solid ${({ theme }) => theme.colors.grayscale.light3};
-  }
-
-  tbody tr:hover {
-    background-color: ${({ theme }) => theme.colors.grayscale.light5};
-  }
-`;
+const styles: Record<string, CSSProperties> = {
+  container: {
+    padding: 16,
+    borderRadius: 8,
+    overflow: 'auto',
+    fontFamily: "'Inter', Helvetica, Arial, sans-serif",
+  },
+  heading: {
+    margin: '0 0 16px 0',
+    textAlign: 'center',
+  },
+  wave: {
+    display: 'block',
+    margin: '0 auto 16px',
+    fontSize: 64,
+    textAlign: 'center',
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    fontSize: 14,
+  },
+  th: {
+    backgroundColor: '#f0f0f0',
+    color: '#262626',
+    textAlign: 'left',
+    padding: 12,
+    borderBottom: '2px solid #d9d9d9',
+    whiteSpace: 'nowrap',
+  },
+  td: {
+    padding: 12,
+    borderBottom: '1px solid #f0f0f0',
+  },
+  trHover: {
+    backgroundColor: '#fafafa',
+  },
+};
 
 export default function HelloWorld(props: HelloWorldProps) {
-  const { data, height, width } = props;
+  const { data, height, width, boldText, headerFontSize } = props;
 
   const columns = data.length > 0 ? Object.keys(data[0]) : [];
+  const headingFontSize = FONT_SIZES[headerFontSize] || FONT_SIZES.xl;
 
   return (
-    <Styles boldText={props.boldText} headerFontSize="xs" height={height} width={width}>
-      <h1>Hello World</h1>
-      <div className="wave-image" role="img" aria-label="Person waving">
+    <div style={{ ...styles.container, height, width }}>
+      <h1
+        style={{
+          ...styles.heading,
+          fontSize: headingFontSize,
+          fontWeight: boldText ? 700 : 400,
+        }}
+      >
+        Hello World
+      </h1>
+      <div style={styles.wave} role="img" aria-label="Person waving">
         👋🧑
       </div>
       {data.length > 0 && (
-        <table>
+        <table style={styles.table}>
           <thead>
             <tr>
               {columns.map((col) => (
-                <th key={col}>{col}</th>
+                <th key={col} style={styles.th}>
+                  {col}
+                </th>
               ))}
             </tr>
           </thead>
@@ -90,13 +108,15 @@ export default function HelloWorld(props: HelloWorldProps) {
             {data.map((row, idx) => (
               <tr key={idx}>
                 {columns.map((col) => (
-                  <td key={col}>{row[col] != null ? String(row[col]) : ''}</td>
+                  <td key={col} style={styles.td}>
+                    {row[col] != null ? String(row[col]) : ''}
+                  </td>
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
       )}
-    </Styles>
+    </div>
   );
 }
