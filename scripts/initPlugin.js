@@ -99,65 +99,6 @@ function createPrompter() {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Release workflow matrix update
-// ──────────────────────────────────────────────────────────────────────────────
-
-/**
- * Inserts `pluginName` into the `matrix.plugin` list of release.yml.
- * Looks for the marker comment to locate the matrix block, then appends
- * after the last existing `- <entry>` line.
- */
-function addPluginToMatrix(pluginName, rootDir) {
-  const workflowPath = path.join(rootDir, '.github', 'workflows', 'release.yml');
-  if (!fs.existsSync(workflowPath)) {
-    console.warn('  Warning: .github/workflows/release.yml not found — skipping matrix update.');
-    return;
-  }
-
-  const content = fs.readFileSync(workflowPath, 'utf8');
-  const lines = content.split('\n');
-
-  // Locate the marker comment that sits just above the matrix list
-  const markerIndex = lines.findIndex((l) =>
-    l.includes('Add new plugin folder names here after running'),
-  );
-  if (markerIndex === -1) {
-    console.warn('  Warning: matrix marker not found in release.yml — skipping matrix update.');
-    return;
-  }
-
-  // Find the last consecutive `- <entry>` line after the marker
-  let lastEntryIndex = -1;
-  for (let i = markerIndex + 1; i < lines.length; i++) {
-    if (/^\s+-\s+\S+/.test(lines[i])) {
-      lastEntryIndex = i;
-    } else if (lastEntryIndex !== -1) {
-      break;
-    }
-  }
-
-  if (lastEntryIndex === -1) {
-    console.warn(
-      '  Warning: no existing matrix entries found in release.yml — skipping matrix update.',
-    );
-    return;
-  }
-
-  // Guard: already present
-  if (lines.some((l) => new RegExp(`^\\s+-\\s+${pluginName}\\s*$`).test(l))) {
-    console.log(`  Info: "${pluginName}" already in release.yml matrix — skipping.`);
-    return;
-  }
-
-  // Reuse the indentation of the last existing entry
-  const indent = (lines[lastEntryIndex].match(/^(\s+)/) || ['', '          '])[1];
-  lines.splice(lastEntryIndex + 1, 0, `${indent}- ${pluginName}`);
-
-  fs.writeFileSync(workflowPath, lines.join('\n'), 'utf8');
-  console.log(`  ✓ Added "${pluginName}" to release.yml publish matrix.`);
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
 // Main
 // ──────────────────────────────────────────────────────────────────────────────
 
@@ -232,17 +173,8 @@ async function main() {
   }
 
   // Generate thumbnail.ts from thumbnail.png (base64 data URL)
-  const thumbnailPng = path.join(targetDir, 'src', 'images', 'thumbnail.png');
-  const thumbnailTs = path.join(targetDir, 'src', 'images', 'thumbnail.ts');
-  if (fs.existsSync(thumbnailPng)) {
-    const imgData = fs.readFileSync(thumbnailPng);
-    const b64 = imgData.toString('base64');
-    const tsContent = `const thumbnail = "data:image/png;base64,${b64}";\nexport default thumbnail;\n`;
-    fs.writeFileSync(thumbnailTs, tsContent, 'utf8');
-  }
-
-  // Register the new plugin in the release workflow matrix
-  addPluginToMatrix(packageName, rootDir);
+  const { generateThumbnail } = require('./generate_thumbnail');
+  generateThumbnail(targetDir);
 
   console.log(`
 ✓ Plugin scaffolded successfully!

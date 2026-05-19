@@ -63,8 +63,6 @@ typings/
 .DS_Store
 
 # Packages build
-packages/*/dist
-packages/*/esm
 plugins/*/dist
 plugins/*/esm
 /.idea/

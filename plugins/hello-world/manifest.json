@@ -1,0 +1,5 @@
+{
+  "name": "@cosmotech/plugin-hello-world",
+  "key": "@cosmotech/plugin-hello-world",
+  "bundle": "dist/index.js"
+}

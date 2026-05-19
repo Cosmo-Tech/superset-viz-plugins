@@ -4,8 +4,7 @@
   "description": "Monorepo de plugins de visualisation custom pour Apache Superset",
   "private": true,
   "workspaces": [
-    "plugins/*",
-    "packages/*"
+    "plugins/*"
   ],
   "scripts": {
     "build": "lerna run build",
@@ -18,7 +17,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\" --ignore-path .prettierignore",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\" --ignore-path .prettierignore",
     "plugin:init": "node scripts/initPlugin.js",
-    "publish": "lerna publish --no-verify-access --yes"
+    "plugin:pipeline": "node scripts/plugin_pipeline.js",
+    "plugin:thumbnail": "node scripts/generate_thumbnail.js",
+    "plugin:package": "node scripts/package_plugin.js",
+    "plugins:package": "node scripts/package_plugins.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.7",

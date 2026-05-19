@@ -1,0 +1,5 @@
+{
+  "name": "@cosmotech/plugin-organizational-chart",
+  "key": "@cosmotech/plugin-organizational-chart",
+  "bundle": "dist/index.js"
+}

@@ -1,0 +1,90 @@
+const fs = require('fs');
+const path = require('path');
+const webpack = require('webpack');
+const pkg = require('./package.json');
+
+class GenerateManifestPlugin {
+  apply(compiler) {
+    compiler.hooks.afterEmit.tap('GenerateManifestPlugin', () => {
+      const manifestPath = path.resolve(__dirname, 'manifest.json');
+      const manifest = { name: pkg.name, key: pkg.name, bundle: 'dist/index.js' };
+      fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
+    });
+  }
+}
+
+const SHARED_MODULES = [
+  'react',
+  'react-dom',
+  '@superset-ui/core',
+  '@superset-ui/chart-controls',
+  'lodash',
+];
+
+module.exports = {
+  mode: 'production',
+  entry: path.resolve(__dirname, 'src/index.ts'),
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'index.js',
+    library: { type: 'module' },
+    module: true,
+    environment: { module: true },
+    asyncChunks: false,
+    clean: true,
+  },
+  experiments: { outputModule: true },
+  resolve: { extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'] },
+  externals: [
+    function ({ request }, callback) {
+      if (SHARED_MODULES.includes(request)) {
+        return callback(null, "var window['__superset__/" + request + "']");
+      }
+      callback();
+    },
+  ],
+  module: {
+    rules: [
+      {
+        test: /\.[jt]sx?$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: [
+                ['@babel/preset-env', { modules: false }],
+                ['@babel/preset-react', { runtime: 'classic' }],
+                '@babel/preset-typescript',
+              ],
+            },
+          },
+        ],
+      },
+      { test: /\.css$/i, use: ['style-loader', 'css-loader'] },
+      { test: /\.(png|jpe?g|gif|svg|woff2?|eot|ttf)$/i, type: 'asset/inline' },
+    ],
+  },
+  optimization: {
+    splitChunks: false,
+    runtimeChunk: false,
+    minimizer: [
+      new (require('terser-webpack-plugin'))({
+        terserOptions: {
+          compress: {
+            sequences: false,
+          },
+          mangle: true,
+        },
+      }),
+    ],
+  },
+  performance: { hints: false },
+  devtool: 'source-map',
+  plugins: [
+    new GenerateManifestPlugin(),
+    new webpack.ProvidePlugin({
+      React: 'react',
+    }),
+  ],
+};

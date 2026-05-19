@@ -4,35 +4,60 @@ Plugin de visualisation hiérarchique pour Apache Superset.
 Affiche un arbre de KPI sous forme de boîtes colorées connectées, conçu pour le suivi
 de flux (bagages, colis, commandes, etc.).
 
-## Aperçu
+## Aperçu visuel
 
-Le chart affiche une structure arborescente fixe à 5 niveaux avec 16 boîtes.
-Chaque boîte est configurable :
-
-- **Titre** — texte affiché au-dessus de la valeur (paramétrable depuis le panneau de configuration)
-- **Colonne SQL** — quelle colonne de la table source fournit la valeur numérique
-- **Couleur** — catégorie de couleur (bleu, vert, rouge, rouge foncé, gris)
-
-La requête SQL renvoie **une seule ligne** contenant toutes les colonnes nécessaires.
-
-## Structure de l'arbre
+Le composant affiche une structure arborescente avec des boîtes colorées connectées par des
+lignes verticales et horizontales. Chaque boîte contient un titre et une valeur numérique.
 
 ```
-Root (blue)
-├── Excluded (grey)
-└── Simulated (blue)
-    ├── Blocked (grey)
-    └── Processed (blue)
-        ├── Arrived (green)
-        │   ├── On time (green)
-        │   └── Last minute (green)
-        ├── Not arrived (red)
-        │   ├── Missed (darkred)
-        │   ├── Recirculation (darkred)
-        │   ├── Ultimate control (darkred)
-        │   └── Other rejects (darkred)
-        └── End stock (grey)
-            └── Passed to stock (grey)
+                    ┌───────────────┐
+                    │   Root (bleu) │
+                    │     1234      │
+                    └───────┬───────┘
+              ┌─────────────┴─────────────┐
+    ┌─────────┴─────────┐     ┌──────────┴──────────┐
+    │  Excluded (gris)  │     │  Simulated (bleu)   │
+    │       56          │     │       1178          │
+    └───────────────────┘     └──────────┬──────────┘
+                                ┌────────┴────────┐
+                       ┌────────┴──┐     ┌────────┴────────┐
+                       │Blocked    │     │  Processed      │
+                       │(gris) 12  │     │  (bleu) 1166    │
+                       └───────────┘     └────────┬────────┘
+                                          ┌───────┼───────┐
+                                     Arrived  Not arr.  End stock
+                                     (vert)   (rouge)    (gris)
+```
+
+Couleurs disponibles : `blue`, `green`, `red`, `darkred`, `grey`.
+
+## Structure du plugin
+
+```
+plugins/organizational-chart/
+├── src/
+│   ├── OrganizationalChart.tsx ← Composant React (arbre de boîtes colorées)
+│   ├── index.ts                ← Export de la classe OrganizationalChartPlugin
+│   ├── types.ts                ← Interfaces TreeNode, BoxConfig, FormData, Props
+│   ├── images/
+│   │   ├── thumbnail.png       ← Image de prévisualisation
+│   │   └── thumbnail.ts        ← Thumbnail encodé en base64 (généré)
+│   └── plugin/
+│       ├── index.ts            ← Classe OrganizationalChartPlugin (extends ChartPlugin)
+│       ├── buildQuery.ts       ← Construction de la requête SQL (une seule ligne)
+│       ├── controlPanel.ts     ← Panneau de configuration (titres + colonnes par boîte)
+│       └── transformProps.ts   ← Transformation réponse API → arbre de TreeNode
+├── test/
+│   ├── index.test.ts           ← Test d'enregistrement du plugin
+│   ├── plugin/
+│   │   ├── buildQuery.test.ts
+│   │   └── transformProps.test.ts
+│   └── __mocks__/              ← Mocks manuels pour @superset-ui
+├── package.json
+├── tsconfig.json
+├── tsconfig.esm.json
+├── babel.config.js
+└── jest.config.js
 ```
 
 ## Configuration
@@ -47,6 +72,8 @@ Le panneau de configuration est organisé en sections correspondant aux niveaux 
 | **Level 2** — Blocked/Processed             | Titre + colonne SQL pour chaque boîte      |
 | **Level 3** — Arrived/Not arrived/End stock | Titre + colonne SQL pour chaque boîte      |
 | **Level 4** — Détails                       | Titre + colonne SQL pour chaque sous-boîte |
+
+La requête SQL renvoie **une seule ligne** contenant toutes les colonnes nécessaires.
 
 ## Colonnes SQL par défaut
 
@@ -68,28 +95,21 @@ Le panneau de configuration est organisé en sections correspondant aux niveaux 
 | Other rejects    | `AutresRebut`         |
 | Passed to stock  | `PassesAuStock`       |
 
-## Usage
-
-```ts
-import { OrganizationalChartPlugin } from '@cosmotech/plugin-organizational-chart';
-
-const plugin = new OrganizationalChartPlugin();
-plugin.configure({ key: 'organizational-chart' }).register();
-```
-
-## Development
+## Commandes
 
 ```bash
-# Build
+# Build (CJS + ESM + types)
 yarn workspace @cosmotech/plugin-organizational-chart build
 
-# Test
+# Tests unitaires
 yarn workspace @cosmotech/plugin-organizational-chart test
 
 # Lint
 yarn workspace @cosmotech/plugin-organizational-chart lint
+
+# Packaging webpack (bundle autonome pour chargement dynamique)
+yarn plugin:package plugins/organizational-chart
+
+# Pipeline complet (lint + test + build + package)
+yarn plugin:pipeline plugins/organizational-chart
 ```
-
-## License
-
-Apache-2.0

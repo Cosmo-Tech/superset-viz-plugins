@@ -8,3 +8,8 @@ coverage
 plugin_template/src
 plugin_template/test
 plugin_template/types
+
+# Generated build outputs
+plugins/versions
+plugins/*/webpack.config.js
+scripts/webpack.config.js

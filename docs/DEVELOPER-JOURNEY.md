@@ -1,12 +1,8 @@
 # Parcours développeur — Cosmotech Viz Plugins
 
-Guide complet pour créer, développer et tester un plugin de visualisation Apache Superset,
-du clone initial jusqu'au déploiement CI/CD.
+Guide complet pour créer, développer et tester un plugin de visualisation Apache Superset.
 
 Version Superset cible : **6.0.0**
-
-> **Règle fondamentale :** la version du Docker backend et la version du frontend Superset
-> cloné doivent être **identiques**. Ne jamais utiliser `latest`.
 
 ---
 
@@ -22,9 +18,9 @@ Version Superset cible : **6.0.0**
 8. [Démarrer Superset en local (Docker)](#8--démarrer-superset-en-local-docker)
 9. [Intégrer le plugin dans Superset](#9--intégrer-le-plugin-dans-superset)
 10. [Cycle de développement](#10--cycle-de-développement)
-11. [Package partagé `@cosmotech/core`](#11--package-partagé-cosmotechcore)
-12. [Conventions de commits](#12--conventions-de-commits)
-13. [CI/CD](#13--cicd)
+11. [Conventions de commits](#11--conventions-de-commits)
+12. [CI/CD](#12--cicd)
+13. [Packaging des plugins pour chargement dynamique](#13--packaging-des-plugins-pour-chargement-dynamique-superset)
 
 ---
 
@@ -32,12 +28,12 @@ Version Superset cible : **6.0.0**
 
 ### Outils requis
 
-| Outil   | Version          | Installation                                | Remarque                                 |
-| ------- | ---------------- | ------------------------------------------- | ---------------------------------------- |
-| Node.js | >= 18 (monorepo) | [nodejs.org](https://nodejs.org)            | v20.19.5 obligatoire pour Superset 6.0.0 |
-| Yarn    | >= 1.22          | `npm install -g yarn`                       | Yarn Classic (pas Yarn Berry)            |
-| Docker  | Version récente  | [docker.com](https://docker.com)            | Requis pour le backend Superset          |
-| nvm     | —                | [nvm-sh/nvm](https://github.com/nvm-sh/nvm) | Recommandé pour gérer les versions Node  |
+| Outil   | Version         | Installation                                | Remarque                                |
+| ------- | --------------- | ------------------------------------------- | --------------------------------------- |
+| Node.js | >= 18           | [nodejs.org](https://nodejs.org)            | Requis pour le monorepo                 |
+| Yarn    | >= 1.22         | `npm install -g yarn`                       | Yarn Classic (pas Yarn Berry)           |
+| Docker  | Version récente | [docker.com](https://docker.com)            | Requis pour Superset + PostgreSQL local |
+| nvm     | —               | [nvm-sh/nvm](https://github.com/nvm-sh/nvm) | Recommandé pour gérer les versions Node |
 
 ### Vérifier l'environnement
 
@@ -45,34 +41,12 @@ Version Superset cible : **6.0.0**
 node --version       # >= 18
 yarn --version       # >= 1.22
 docker --version
-docker compose version
+docker-compose version
 ```
-
-### Node 20 pour Superset
-
-Superset 6.0.0 impose Node **v20.19.5** et npm **10.8.4** pour le frontend. Utiliser `nvm`
-pour basculer entre les versions :
-
-```bash
-nvm install v20.19.5
-nvm use v20.19.5
-node --version   # v20.19.5
-npm --version    # 10.8.4
-```
-
-> Le monorepo lui-même fonctionne avec Node >= 18. La contrainte v20 ne s'applique
-> qu'au build du frontend Superset (étapes 8–9).
 
 ---
 
 ## 2 — Récupération des projets
-
-Créer un dossier de travail qui contiendra les deux dépôts côte à côte :
-
-```bash
-mkdir dev_plugin_superset
-cd dev_plugin_superset
-```
 
 ### Cloner le monorepo de plugins
 
@@ -80,25 +54,10 @@ cd dev_plugin_superset
 git clone git@github.com:Cosmo-Tech/cosmotech-viz-plugins.git
 cd cosmotech-viz-plugins
 yarn install
-cd ..
 ```
 
 Yarn Workspaces installe toutes les dépendances de la racine et de chaque package en une
 seule passe.
-
-### Cloner Superset 6.0.0
-
-```bash
-git clone --branch 6.0.0 --depth 1 https://github.com/apache/superset.git
-```
-
-L'arborescence obtenue :
-
-```
-dev_plugin_superset/
-├── cosmotech-viz-plugins/   ← monorepo de plugins
-└── superset/                ← frontend + backend Superset
-```
 
 ---
 
@@ -124,18 +83,15 @@ cosmotech-viz-plugins/
 │   ├── tsconfig.esm.json
 │   ├── babel.config.js
 │   └── jest.config.js
-├── packages/
-│   └── core/                        ← @cosmotech/core — composants partagés
-│       ├── src/index.ts             ← Point d'entrée (exports publics)
-│       ├── tsconfig.json            ← Build CJS → dist/
-│       └── tsconfig.esm.json        ← Build ESM → esm/
 ├── scripts/
 │   ├── initPlugin.js                ← Scaffold d'un plugin depuis plugin_template/
-│   ├── addDependencies.js           ← Injecte les plugins dans package.json Superset
-│   ├── copyAssets.js                ← Copie les assets statiques vers dist/ et esm/
-│   ├── generatePreset.js            ← Génère le fichier *Preset.ts pour Superset
-│   ├── generateSetupPluginsExtra.js ← Génère setupPluginsExtra.ts
-│   └── prepare_build.sh             ← Orchestre l'injection complète (CI)
+│   ├── plugin_pipeline.js           ← Pipeline complet sur un plugin (lint+test+build+package)
+│   ├── package_plugins.js           ← Orchestre le packaging webpack de tous les plugins
+│   ├── package_plugin.js            ← Packaging d'un seul plugin (patch + build)
+│   ├── patch_webpack.js             ← Injecte webpack.config.js pour ESM + externals
+│   ├── patch_index_ts.js            ← Ajoute l'auto-registration dans index.ts
+│   ├── build_plugin.js              ← Build webpack d'un plugin → versions/<name>/<v>/index.js
+│   └── webpack.config.js            ← Config webpack utilisée par patch_webpack
 ├── docs/                            ← Documentation
 ├── babel.config.js                  ← Transpilation TS/TSX → JS (Jest)
 ├── jest.config.js                   ← Config Jest racine (découverte auto)
@@ -152,18 +108,22 @@ cosmotech-viz-plugins/
 
 Toutes les commandes s'exécutent depuis la racine du monorepo.
 
-| Commande            | Description                                              |
-| ------------------- | -------------------------------------------------------- |
-| `yarn plugin:init`  | Scaffold un nouveau plugin depuis `plugin_template/`     |
-| `yarn build`        | Build production de tous les packages (CJS + ESM)        |
-| `yarn build:dev`    | Watch mode — recompile à chaque modification             |
-| `yarn test`         | Lance tous les tests unitaires                           |
-| `yarn test:watch`   | Tests en mode watch                                      |
-| `yarn lint`         | Analyse ESLint sur tous les `src/` de chaque package     |
-| `yarn lint:root`    | Analyse ESLint sur les fichiers racine (scripts, config) |
-| `yarn format`       | Formate tous les fichiers avec Prettier                  |
-| `yarn format:check` | Vérifie le formatage sans modifier (utilisé en CI)       |
-| `yarn clean`        | Supprime les dossiers `dist/`, `esm/`, `coverage/`       |
+| Commande                | Description                                                    |
+| ----------------------- | -------------------------------------------------------------- |
+| `yarn plugin:init`      | Scaffold un nouveau plugin depuis `plugin_template/`           |
+| `yarn plugin:pipeline`  | Pipeline complet sur un plugin (lint + test + build + package) |
+| `yarn plugin:package`   | Package un seul plugin (patch + build webpack)                 |
+| `yarn plugins:package`  | Package tous les plugins (découverte + patch + build)          |
+| `yarn plugin:thumbnail` | Régénère `thumbnail.ts` depuis `thumbnail.png` d'un plugin     |
+| `yarn build`            | Build production de tous les packages (CJS + ESM)              |
+| `yarn build:dev`        | Watch mode — recompile à chaque modification                   |
+| `yarn test`             | Lance tous les tests unitaires                                 |
+| `yarn test:watch`       | Tests en mode watch                                            |
+| `yarn lint`             | Analyse ESLint sur tous les `src/` de chaque package           |
+| `yarn lint:root`        | Analyse ESLint sur les fichiers racine (scripts, config)       |
+| `yarn format`           | Formate tous les fichiers avec Prettier                        |
+| `yarn format:check`     | Vérifie le formatage sans modifier (utilisé en CI)             |
+| `yarn clean`            | Supprime les dossiers `dist/`, `esm/`, `coverage/`             |
 
 Pour cibler un seul package :
 
@@ -198,8 +158,7 @@ Description: Visualisation personnalisée de données
 - **Display name** — nom affiché dans l'interface Superset.
 - **Description** — description courte (readme, metadata).
 
-Le script génère `plugins/mon-graphique/` avec la structure complète, ajoute
-automatiquement le plugin à la matrice de publication dans `release.yml`, et génère
+Le script génère `plugins/mon-graphique/` avec la structure complète et génère
 le fichier `thumbnail.ts` (encodage base64 du PNG) :
 
 ```
@@ -396,195 +355,162 @@ yarn build && yarn lint && yarn format:check && yarn test
 
 ## 8 — Démarrer Superset en local (Docker)
 
-Le backend Superset tourne dans un container Docker. Le frontend sera lancé séparément
-en mode développement (étape 9).
+L'environnement de développement local est entièrement contenu dans le dossier `docker/` du
+monorepo. Il comprend Superset, une base PostgreSQL et un serveur nginx pour servir les plugins.
 
-### Créer `docker-compose.simple.yml`
+### Première utilisation : construire l'image Docker
 
-Dans le dossier `dev_plugin_superset/superset`, créer le fichier :
-
-```yaml
-services:
-  superset:
-    image: apache/superset:6.0.0
-    container_name: superset_dev
-    ports:
-      - '8088:8088'
-    environment:
-      - SUPERSET_SECRET_KEY=change-this-in-production
-      - SUPERSET_ENV=production
-      - PYTHONPATH=/app/pythonpath
-    volumes:
-      - ./superset_config.py:/app/pythonpath/superset_config.py:ro
-      - ./ma-base.db:/app/ma-base.db:ro
-      - superset_home:/app/superset_home
-    command: >
-      bash -c "
-      superset db upgrade &&
-      superset fab create-admin --username admin --firstname Admin --lastname User --email admin@admin.com --password admin 2>/dev/null || true &&
-      superset init &&
-      superset run -h 0.0.0.0 -p 8088 --with-threads --reload --debugger
-      "
-    restart: unless-stopped
-
-volumes:
-  superset_home:
-```
-
-### Créer `superset_config.py`
-
-Dans le même dossier `dev_plugin_superset/superset` :
-
-```python
-PREVENT_UNSAFE_DB_CONNECTIONS = False
-
-# Désactiver la compression HTTP côté backend.
-# Le proxy webpack (processHTML) n'a pas à décompresser les réponses
-# → évite le contenu binaire illisible sur Windows.
-COMPRESS_REGISTER = False
-COMPRESS_ENABLED = False
-
-# Cookies de session accessibles depuis le dev server (localhost:9000)
-SESSION_COOKIE_SAMESITE = None
-SESSION_COOKIE_SECURE = False
-SESSION_COOKIE_HTTPONLY = False
-
-WTF_CSRF_ENABLED = False
-
-# Désactiver CSP pour le développement local
-TALISMAN_ENABLED = False
-TALISMAN_CONFIG = {
-    "content_security_policy": False,
-    "force_https": False,
-    "force_https_permanent": False,
-}
-```
-
-> ⚠️ **Ne pas ajouter `ENABLE_CORS = True`** — ce paramètre tente d'importer `flask_cors`
-> qui n'est pas disponible dans l'image Docker et fait crasher le container.
-> CORS n'est pas nécessaire : tout passe par le proxy webpack
-> (`browser → localhost:9000 → proxy → Flask`), Flask ne reçoit jamais de requêtes cross-origin.
-
-### Lancer le backend
+L'image `cosmotech/superset-dev:6.0.0` est basée sur l'image officielle Superset avec les
+dépendances Python supplémentaires pré-installées (`psycopg2-binary`, `authlib`, `mysqlclient`).
 
 ```bash
-cd dev_plugin_superset/superset
-docker compose -f docker-compose.simple.yml up -d
-docker logs -f superset_dev   # attendre "Running on http://0.0.0.0:8088"
+cd docker
+./docker_build.sh
 ```
+
+Cette commande n'est à exécuter qu'une seule fois (ou après modification du `Dockerfile`).
+
+### Démarrer les services
+
+```bash
+cd docker
+docker-compose up -d
+```
+
+### Services disponibles
+
+| Service         | URL                   | Description                                   |
+| --------------- | --------------------- | --------------------------------------------- |
+| Superset        | http://localhost:8088 | Interface Superset (login: `admin` / `admin`) |
+| PostgreSQL      | localhost:5435        | Base de données (user: `admin` / `admin`)     |
+| Plugins (nginx) | http://localhost      | Sert les bundles JS des plugins packagés      |
+
+### Arrêter les services
+
+```bash
+cd docker
+docker-compose down
+```
+
+> Les données PostgreSQL sont persistées dans un volume Docker nommé `postgres-data`.
+> Pour réinitialiser la base : `docker-compose down -v`.
 
 ---
 
 ## 9 — Intégrer le plugin dans Superset
 
-> **Prérequis :** basculer sur Node v20 (`nvm use v20.19.5`) pour le frontend Superset.
+Une fois un plugin packagé, son bundle webpack est disponible dans
+`plugins/versions/<nom du plugin>/<version>/index.js`. Le service nginx du docker-compose sert ce
+dossier sur `http://localhost/<nom du plugin>/<version>/index.js`, rendant chaque bundle accessible via une URL directe.
 
-### 9.1 — Ajouter le plugin comme dépendance locale
-
-Dans `dev_plugin_superset/superset/superset-frontend/package.json`, ajouter dans
-`dependencies` une référence `file:` vers le plugin :
-
-```json
-{
-  "dependencies": {
-    "@cosmotech/plugin-mon-graphique": "file:../../cosmotech-viz-plugins/plugins/mon-graphique"
-  }
-}
-```
-
-Puis installer :
+### 9.1 — Packager le plugin
 
 ```bash
-cd dev_plugin_superset/superset/superset-frontend
-npm install
+yarn plugin:pipeline plugins/mon-graphique
 ```
 
-### 9.2 — Enregistrer le plugin dans MainPreset.js
+Le fichier de sortie sera par exemple :
+`plugins/versions/mon-graphique/0.1.0/index.js`
 
-Fichier :
-`superset/superset-frontend/src/visualizations/presets/MainPreset.js`
+### 9.2 — Enregistrer le plugin dans Superset
 
-Ajouter l'import avec les autres imports :
+1. Se connecter à Superset : http://localhost:8088 (login: `admin` / `admin`)
+2. Aller dans le menu **Settings → Plugins**
+3. Cliquer sur **+ Plugin** et remplir les champs :
 
-```javascript
-import { MonGraphiquePlugin } from '@cosmotech/plugin-mon-graphique';
+| Champ | Valeur                                          |
+| ----- | ----------------------------------------------- |
+| Name  | Mon Graphique                                   |
+| Key   | `mon-graphique`                                 |
+| URL   | `http://localhost/mon-graphique/0.1.0/index.js` |
+
+L'URL est construite selon le pattern :
+
+```
+http://localhost/<nom-du-plugin>/<version>/index.js
 ```
 
-Ajouter dans le tableau `configure` :
+> Les fichiers sont servis par le service **plugins-server** (nginx) défini dans le
+> docker-compose, qui monte le dossier `plugins/versions/` en lecture seule et expose
+> les bundles sur le port 80 avec le MIME type `application/javascript` et les headers CORS.
 
-```javascript
-new MonGraphiquePlugin().configure({ key: 'mon-graphique' }),
-```
+### 9.3 — Utiliser le plugin
 
-### 9.3 — Démarrer le dev-server frontend
-
-```bash
-cd dev_plugin_superset/superset/superset-frontend
-npm run dev-server
-```
-
-### Accès
-
-| URL                   | Usage                                  |
-| --------------------- | -------------------------------------- |
-| http://localhost:9000 | Frontend dev (avec hot-reload webpack) |
-| http://127.0.0.1:8088 | Backend direct (API Flask)             |
-
-Login : `admin` / `admin`
+Une fois enregistré, le plugin apparaît dans la liste des types de graphiques disponibles dans la section `Others/Autres`
 
 ---
 
 ## 10 — Cycle de développement
 
-Une fois l'environnement en place, le workflow itératif est le suivant :
+### Architecture des services Docker
 
-1. **Modifier** le code du plugin dans `cosmotech-viz-plugins/plugins/mon-graphique/src/`.
-2. **Rebuilder** le plugin :
+Le fichier `docker/docker-compose.yaml` définit trois services qui fonctionnent ensemble :
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│  docker-compose up                                                      │
+│                                                                         │
+│  ┌─────────────────┐    ┌──────────────────┐    ┌───────────────────┐  │
+│  │  superset        │    │  postgres         │    │  plugins-server   │  │
+│  │  :8088           │───▶│  :5432 (int)      │    │  :80 (nginx)      │  │
+│  │  Interface BI    │    │  Base de données  │    │  Sert les .js     │  │
+│  └─────────────────┘    └──────────────────┘    └───────────────────┘  │
+│         │                                              ▲                │
+│         │  charge les plugins via URL                  │                │
+│         └──────────────────────────────────────────────┘                │
+└─────────────────────────────────────────────────────────────────────────┘
+                                                         ▲
+                                                         │ monte en lecture
+                                                         │
+                                               plugins/versions/
+                                               └── mon-graphique/
+                                                   └── 0.1.0/
+                                                       └── index.js
+```
+
+- **superset** — Instance Superset complète (backend + frontend). Se connecte à PostgreSQL
+  pour stocker sa configuration (dashboards, datasets, utilisateurs).
+- **postgres** — Base de données PostgreSQL accessible depuis Superset via le réseau interne
+  Docker (`postgres:5432`). Exposée sur l'hôte sur le port `5435` pour un accès externe
+  (DBeaver, pgAdmin).
+- **plugins-server** — Serveur nginx qui sert les bundles webpack des plugins depuis
+  `plugins/versions/`. Superset charge dynamiquement les plugins via l'URL
+  `http://localhost/<nom du plugin>/<version>/index.js` depuis le navigateur.
+
+### Workflow itératif
+
+Une fois l'environnement Docker démarré et les plugins enregistrés dans Superset (section 9),
+le cycle de développement est le suivant :
+
+1. **Modifier** le code du plugin dans `plugins/mon-graphique/src/`.
+
+2. **Packager** le plugin pour mettre à jour le bundle servi par nginx :
+
    ```bash
-   cd cosmotech-viz-plugins
-   yarn workspace @cosmotech/plugin-mon-graphique build
+   yarn plugin:pipeline plugins/mon-graphique
    ```
-3. **Réinstaller** dans Superset pour que le lien `file:` prenne en compte les changements :
+
+   Ou pour un cycle complet avec lint + test + build + package :
+
    ```bash
-   cd ../superset/superset-frontend
-   npm install
+   yarn plugin:pipeline plugins/mon-graphique
    ```
-4. **Recharger** le dev-server (redémarrer `npm run dev-server` ou attendre le hot-reload).
-5. **Tester** dans le navigateur sur http://localhost:9000.
-6. **Valider** avant commit :
+
+3. **Recharger** la page dans Superset (http://localhost:8088). Le plugin est rechargé
+   dynamiquement depuis le serveur nginx — pas besoin de redémarrer les containers.
+
+4. **Tester** la visualisation sur un dataset connecté à la base PostgreSQL.
+
+5. **Valider** avant commit :
    ```bash
-   cd cosmotech-viz-plugins
    yarn build && yarn lint && yarn format:check && yarn test
    ```
 
----
-
-## 11 — Package partagé `@cosmotech/core`
-
-`packages/core` contient les composants et utilitaires réutilisables entre plugins.
-
-Pour utiliser `core` dans un plugin, l'ajouter en dépendance :
-
-```json
-{
-  "dependencies": {
-    "@cosmotech/core": "*"
-  }
-}
-```
-
-Puis importer :
-
-```typescript
-import { MonUtilitaire } from '@cosmotech/core';
-```
-
-Pour ajouter un export à `core`, modifier `packages/core/src/index.ts` puis relancer
-`yarn build`.
+> **Astuce** : le packaging (`yarn plugin:pipeline`) lance successivement yarn lint, yarn test, yarn build et yarn plugin:package. Si la commande tourne sans erreur, le plugin est mis à jour automatiquement dans l'environnement local.
 
 ---
 
-## 12 — Conventions de commits
+## 11 — Conventions de commits
 
 Lerna utilise `conventionalCommits: true`.
 Préfixes [Conventional Commits](https://www.conventionalcommits.org/) :
@@ -600,7 +526,7 @@ Préfixes [Conventional Commits](https://www.conventionalcommits.org/) :
 
 ---
 
-## 13 — CI/CD
+## 12 — CI/CD
 
 ### Workflow de CI — `.github/workflows/ci.yml`
 
@@ -624,39 +550,109 @@ runner  : ubuntu-latest, Node.js 22
 > `plugin_template/types` via `.prettierignore` — ces répertoires contiennent des tokens
 > `{{...}}` qui ne sont pas du TypeScript valide.
 
-### Workflow de release — `.github/workflows/release.yml`
+---
 
-Déclenché automatiquement sur **push sur la branche main**.
+## 13 — Packaging des plugins pour chargement dynamique Superset
+
+Superset 6.x supporte le **chargement dynamique de plugins** : chaque plugin est compilé en un
+bundle webpack autonome versionné qui est chargé à la volée par le frontend.
+
+Les scripts dans `scripts/` automatisent ce processus de packaging.
+
+### Structure de sortie
 
 ```
-trigger : push sur main
-runner  : ubuntu-latest, Node.js 20
-
-Job 1 — publish (matrice parallèle par plugin) :
-  1. Checkout du code
-  2. Setup Node.js 20 (avec cache Yarn + registry npm)
-  3. yarn install --frozen-lockfile
-  4. yarn workspace @cosmotech/plugin-<name> build
-  5. Vérification si la version existe déjà sur npm
-  6. Détermination du dist-tag (latest, beta, alpha…)
-  7. npm publish --access public --tag <dist-tag>
-
-Job 2 — release (après publish) :
-  1. Checkout monorepo + checkout apache/superset
-  2. yarn install --frozen-lockfile
-  3. Injection des plugins dans Superset (prepare_build.sh)
-  4. Build et push de l'image Docker sur GHCR
+plugins/
+└── versions/
+    └── hello-world/
+        └── 0.1.0/
+            ├── index.js           ← sans suffixe
+            └── index-beta.js      ← avec --suffix beta
 ```
 
-La matrice `plugin:` dans `release.yml` est mise à jour automatiquement par
-`yarn plugin:init`. Chaque nouveau plugin ajouté est publié en parallèle avec
-`fail-fast: false`.
+### Pipeline de packaging
 
-### Variables d'environnement CI
+```
+package_plugins.js [--suffix <suffix>]
+  └── Pour chaque plugin détecté dans plugins/ :
+        1. generate_thumbnail.js → Régénère thumbnail.ts si thumbnail.png a été modifié
+        2. patch_webpack.js      → Injecte la config webpack (ESM, externals)
+        3. patch_index_ts.js     → Ajoute l'auto-registration (.configure/.register)
+        4. build_plugin.js       → npm install + webpack-cli → <plugins-dir>/versions/<name>/<version>/index[-suffix].js
+```
 
-| Variable                    | Rôle                                               |
-| --------------------------- | -------------------------------------------------- |
-| `GITHUB_WORKSPACE`          | Chemin racine du workspace GitHub Actions          |
-| `PROJECT_WORKING_DIRECTORY` | Chemin relatif du monorepo dans le workspace       |
-| `PRESET_NAME`               | Nom du Preset Superset à générer (ex: `CosmoTech`) |
-| `PLUGINS_EXTRA_FILENAME`    | Nom du fichier `setupPluginsExtra` à générer       |
+### Commandes
+
+```bash
+# Pipeline complet sur un plugin (lint + test + build + package) :
+yarn plugin:pipeline plugins/hello-world
+yarn plugin:pipeline plugins/hello-world --suffix beta
+
+# Packager TOUS les plugins d'un coup :
+yarn plugins:package
+# ou directement : node scripts/package_plugins.js
+
+# Packager un seul plugin (sans lint/test/build) :
+yarn plugin:package plugins/hello-world
+# ou directement : node scripts/package_plugin.js plugins/hello-world
+
+# Avec un suffixe (ex: identifiant de branche, tag de release) :
+yarn plugins:package --suffix beta
+yarn plugin:package plugins/hello-world --suffix beta
+
+# Avec un dossier de plugins personnalisé :
+yarn plugins:package --plugins-dir /chemin/vers/plugins
+
+# Régénérer le thumbnail d'un plugin :
+yarn plugin:thumbnail plugins/hello-world
+
+# Scripts individuels (usage avancé) :
+node scripts/generate_thumbnail.js plugins/hello-world
+node scripts/patch_webpack.js plugins/hello-world
+node scripts/patch_index_ts.js plugins/hello-world
+node scripts/build_plugin.js plugins/hello-world
+node scripts/build_plugin.js plugins/hello-world --suffix rc1
+```
+
+### Détail des scripts
+
+| Script                  | Rôle                                                                                                      |
+| ----------------------- | --------------------------------------------------------------------------------------------------------- |
+| `plugin_pipeline.js`    | Pipeline complet sur un plugin : lint + test + build (lerna) puis package (patch + webpack)               |
+| `package_plugins.js`    | Orchestre l'ensemble : découvre les plugins et lance les 4 étapes sur chacun                              |
+| `package_plugin.js`     | Package un seul plugin (thumbnail + patch_webpack + patch_index_ts + build_plugin)                        |
+| `generate_thumbnail.js` | Génère `src/images/thumbnail.ts` (base64 data URL) depuis `src/images/thumbnail.png`                      |
+| `patch_webpack.js`      | Copie `scripts/webpack.config.js` dans le plugin (sauvegarde l'original en `.original`)                   |
+| `patch_index_ts.js`     | Ajoute `.configure({ key: '<PluginName>' }).register()` dans `src/index.ts`                               |
+| `build_plugin.js`       | Installe les dépendances webpack puis lance `webpack-cli` → `versions/<name>/<version>/index[-suffix].js` |
+
+### Comment `patch_index_ts.js` fonctionne
+
+Le script transforme l'export par défaut du plugin en auto-registration :
+
+```typescript
+// Avant (source dans git)
+export { default as HelloWorldPlugin } from './plugin';
+
+// Après (injection par patch_index_ts.js — deploy-time uniquement)
+import { default as HelloWorldPlugin } from './plugin';
+new HelloWorldPlugin().configure({ key: 'hello-world' }).register();
+```
+
+> **Important** : cette modification est appliquée uniquement au moment du packaging pour
+> déploiement. Le fichier `src/index.ts` dans git ne doit **jamais** contenir ce code
+> d'auto-registration — il casserait les tests unitaires.
+
+### Comment `build_plugin.js` fonctionne
+
+1. Lit la version depuis `package.json`
+2. Vérifie/ajoute un script `build-dist` dans `package.json`
+3. Lance `npm install` si `node_modules/` n'existe pas
+4. Installe les dépendances de build manquantes (webpack, ts-loader, babel-loader, etc.)
+5. Exécute `npx webpack-cli` avec `--output-path <plugins-dir>/versions/<name>/<version>` et `--output-filename index[-suffix].js`
+6. Vérifie que le fichier de sortie a été produit
+
+### Prérequis
+
+- Node.js >= 18 / npm (pour les builds webpack)
+- Les plugins doivent avoir un `package.json` et un `src/index.ts`

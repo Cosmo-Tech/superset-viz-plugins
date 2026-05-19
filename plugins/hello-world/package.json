@@ -17,7 +17,8 @@
     "clean": "rm -rf dist esm coverage",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "lint": "eslint src --ext .ts,.tsx"
+    "lint": "eslint src --ext .ts,.tsx",
+    "build-dist": "webpack-cli --config webpack.config.js"
   },
   "author": "jreynard-code",
   "license": "Apache-2.0",
@@ -31,11 +32,22 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-env": "^7.29.5",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/preset-typescript": "^7.28.5",
     "@superset-ui/chart-controls": "^0.20.3",
     "@superset-ui/core": "^0.20.4",
     "@types/jest": "^29.5.12",
     "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2"
+    "@types/react-dom": "^17.0.2",
+    "babel-loader": "^9.2.1",
+    "css-loader": "^6.11.0",
+    "style-loader": "^3.3.4",
+    "terser-webpack-plugin": "^5.6.0",
+    "ts-loader": "^9.5.7",
+    "webpack": "^5.107.0",
+    "webpack-cli": "^5.1.4"
   },
   "directories": {
     "test": "test"

@@ -1,3 +1,0 @@
-# This is a private monorepo root — it must never be published to npm.
-# Exclude everything as a safety guard.
-*

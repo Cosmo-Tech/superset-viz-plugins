@@ -1,67 +1,74 @@
-# hello-world
+# @cosmotech/plugin-hello-world
 
-This is the Simple Plugin that display &#34;Hello World&#34; Superset Chart Plugin.
+Plugin de démonstration pour Apache Superset. Affiche un titre « Hello World » avec un emoji
+et un tableau des données retournées par la requête SQL configurée.
 
-### Usage
+## Aperçu visuel
 
-To build the plugin, run the following commands:
+Le composant affiche :
 
-```
-npm ci
-npm run build
-```
-
-Alternatively, to run the plugin in development mode (=rebuilding whenever changes are made), start the dev server with the following command:
+- Un titre **« Hello World »** centré, avec taille et graisse configurables
+- Un emoji 👋🧑 (personne qui salue)
+- Un **tableau HTML** présentant toutes les colonnes et lignes du dataset
 
 ```
-npm run dev
+┌──────────────────────────────────────┐
+│           Hello World                │
+│              👋🧑                    │
+│                                      │
+│  ┌──────────┬──────────┬──────────┐  │
+│  │ col_a    │ col_b    │ col_c    │  │
+│  ├──────────┼──────────┼──────────┤  │
+│  │ valeur1  │ valeur2  │ valeur3  │  │
+│  │ ...      │ ...      │ ...      │  │
+│  └──────────┴──────────┴──────────┘  │
+└──────────────────────────────────────┘
 ```
 
-To add the package to Superset, go to the `superset-frontend` subdirectory in your Superset source folder (assuming both the `hello-world` plugin and `superset` repos are in the same root directory) and run
+## Structure du plugin
 
 ```
-npm i -S ../../hello-world
+plugins/hello-world/
+├── src/
+│   ├── HelloWorld.tsx          ← Composant React (titre + emoji + tableau)
+│   ├── index.ts                ← Export de la classe HelloWorldPlugin
+│   ├── types.ts                ← Interfaces FormData et Props
+│   ├── images/
+│   │   ├── thumbnail.png       ← Image de prévisualisation
+│   │   └── thumbnail.ts        ← Thumbnail encodé en base64 (généré)
+│   └── plugin/
+│       ├── index.ts            ← Classe HelloWorldPlugin (extends ChartPlugin)
+│       ├── buildQuery.ts       ← Construction de la requête SQL
+│       ├── controlPanel.ts     ← Panneau de configuration Superset
+│       └── transformProps.ts   ← Transformation réponse API → props React
+├── test/
+│   ├── index.test.ts           ← Test d'enregistrement du plugin
+│   ├── plugin/
+│   │   ├── buildQuery.test.ts
+│   │   └── transformProps.test.ts
+│   └── __mocks__/              ← Mocks manuels pour @superset-ui
+├── package.json
+├── tsconfig.json
+├── tsconfig.esm.json
+├── babel.config.js
+└── jest.config.js
 ```
 
-If your Superset plugin exists in the `superset-frontend` directory and you wish to resolve TypeScript errors about `@superset-ui/core` not being resolved correctly, add the following to your `tsconfig.json` file:
+## Commandes
 
-```
-"references": [
-  {
-    "path": "../../packages/superset-ui-chart-controls"
-  },
-  {
-    "path": "../../packages/superset-ui-core"
-  }
-]
-```
+```bash
+# Build (CJS + ESM + types)
+yarn workspace @cosmotech/plugin-hello-world build
 
-You may also wish to add the following to the `include` array in `tsconfig.json` to make Superset types available to your plugin:
+# Tests unitaires
+yarn workspace @cosmotech/plugin-hello-world test
 
-```
-"../../types/**/*"
-```
+# Lint
+yarn workspace @cosmotech/plugin-hello-world lint
 
-Finally, if you wish to ensure your plugin `tsconfig.json` is aligned with the root Superset project, you may add the following to your `tsconfig.json` file:
+# Packaging webpack (bundle autonome pour chargement dynamique)
+yarn plugin:package plugins/hello-world
 
-```
-"extends": "../../tsconfig.json",
-```
-
-After this edit the `superset-frontend/src/visualizations/presets/MainPreset.js` and make the following changes:
-
-```js
-import { HelloWorld } from 'hello-world';
-```
-
-to import the plugin and later add the following to the array that's passed to the `plugins` property:
-
-```js
-new HelloWorld().configure({ key: 'hello-world' }),
-```
-
-After that the plugin should show up when you run Superset, e.g. the development server:
-
-```
-npm run dev-server
+# Pipeline complet (lint + test + build + package)
+yarn plugin:pipeline plugins/hello-world
 ```

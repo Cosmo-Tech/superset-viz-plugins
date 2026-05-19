@@ -15,20 +15,20 @@ cosmotech-viz-plugins/
 ├── plugins/                  ← Chaque sous-dossier est un plugin npm indépendant
 │   └── hello-world/
 ├── plugin_template/          ← Gabarit de plugin (utilisé par `yarn plugin:init`)
-├── packages/
-│   └── core/                 ← Package de composants partagés entre plugins
-├── scripts/                  ← Scripts de build/release vers Superset
+├── scripts/                  ← Scripts de build/packaging
 │   ├── initPlugin.js         ← Génère un nouveau plugin depuis plugin_template/
-│   ├── addDependencies.js    ← Injecte les plugins dans le package.json cible
-│   ├── copyAssets.js
-│   ├── generatePreset.js     ← Injecte les imports/instanciations dans MainPreset.js
-│   ├── generateSetupPluginsExtra.js
-│   └── prepare_build.sh
+│   ├── plugin_pipeline.js    ← Pipeline complet sur un plugin (lint+test+build+package)
+│   ├── package_plugins.js    ← Packaging webpack de tous les plugins
+│   ├── package_plugin.js     ← Packaging d'un seul plugin (patch + build)
+│   ├── generate_thumbnail.js ← Génère thumbnail.ts depuis thumbnail.png (base64 data URL)
+│   ├── patch_webpack.js      ← Injecte webpack.config.js ESM + externals
+│   ├── patch_index_ts.js     ← Auto-registration (.configure/.register)
+│   ├── build_plugin.js       ← Build webpack d'un plugin → versions/<name>/<v>/index.js
+│   └── webpack.config.js     ← Config webpack utilisée par patch_webpack
 ├── docs/                     ← Documentation du projet
 ├── .github/
 │   └── workflows/
-│       ├── ci.yml            ← Build + Lint + Format check + Test (tout push/PR)
-│       └── release.yml       ← npm publish (matrix) + Docker push (push sur main)
+│       └── ci.yml            ← Build + Lint + Format check + Test (tout push/PR)
 ├── package.json              ← Racine du monorepo
 ├── lerna.json                ← Configuration Lerna pour la gestion du monorepo
 └── tsconfig.json             ← Configuration TypeScript partagée
@@ -65,19 +65,6 @@ cosmotech-viz-plugins/
 │  GitHub Actions — ci.yml (tout push / toute PR)                 │
 │  └── yarn install + yarn build + yarn lint                      │
 │      + yarn format:check + yarn test                            │
-└──────────────────────────┬──────────────────────────────────────┘
-                           │ (si branche main)
-                           ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  GitHub Actions — release.yml                                   │
-│  Job 1 (publish) — matrice parallèle par plugin :                │
-│  ├── Build du plugin                                              │
-│  ├── Vérification si la version existe déjà sur npm               │
-│  ├── Détermination du dist-tag (latest, beta, alpha…)            │
-│  └── Publication npm (`npm publish --tag <dist-tag>`)             │
-│  Job 2 (release) — après publish :                               │
-│  ├── Injection des plugins dans apache/superset                  │
-│  └── Build et push d'une image Docker sur GHCR                    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -92,8 +79,6 @@ Chaque plugin expose :
 3. **Un `transformProps`** qui transforme la réponse API en props passées au composant React
 4. **Un panneau de contrôle** (`controlPanel`) qui définit les options configurables par l'utilisateur dans l'interface Superset
 5. **Un composant React** qui effectue le rendu du graphique
-
-Le script `scripts/prepare_build.sh` injecte automatiquement ces plugins dans le code source de Superset avant le build Docker.
 
 ---
 
@@ -122,6 +107,51 @@ remplacés dans tous les fichiers. Il suffit ensuite de :
 yarn install
 yarn workspace @cosmotech/plugin-mon-graphique build
 ```
+
+---
+
+## Packaging des plugins pour chargement dynamique
+
+Superset 6.x permet le chargement dynamique de plugins : chaque plugin est compilé en bundle
+webpack autonome chargé à la volée par le frontend.
+
+Des scripts dans `scripts/` automatisent ce processus :
+
+| Script               | Usage                                                                              |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `plugin_pipeline.js` | Pipeline complet sur un plugin : lint + test + build (lerna) puis package          |
+| `package_plugins.js` | Orchestre l'ensemble — découvre et package tous les plugins                        |
+| `package_plugin.js`  | Package un seul plugin (pipeline complet : patch + build)                          |
+| `patch_webpack.js`   | Injecte une config webpack ESM avec externals dans un plugin                       |
+| `patch_index_ts.js`  | Ajoute le code d'auto-registration (`.configure().register()`) dans `src/index.ts` |
+| `build_plugin.js`    | Installe les dépendances webpack et compile un plugin versionné                    |
+
+Sortie : `<plugins-dir>/versions/<plugin-name>/<version>/index[-suffix].js`
+
+```bash
+# Pipeline complet sur un plugin (lint + test + build + package) :
+yarn plugin:pipeline plugins/hello-world
+yarn plugin:pipeline plugins/hello-world --suffix beta
+
+# Packager tous les plugins :
+yarn plugins:package
+# ou directement : node scripts/package_plugins.js
+
+# Packager un seul plugin (sans lint/test/build) :
+yarn plugin:package plugins/hello-world
+# ou directement : node scripts/package_plugin.js plugins/hello-world
+
+# Avec un suffixe :
+yarn plugins:package --suffix beta
+yarn plugin:package plugins/hello-world --suffix rc1
+
+# Script individuel (build seul) :
+node scripts/build_plugin.js plugins/hello-world
+node scripts/build_plugin.js plugins/hello-world --suffix rc1
+```
+
+> **Note** : `patch_index_ts.js` modifie `src/index.ts` uniquement pour le déploiement —
+> le code source dans git ne contient jamais l'auto-registration.
 
 ---
 
