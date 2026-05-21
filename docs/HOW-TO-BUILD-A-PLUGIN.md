@@ -43,6 +43,12 @@ et itérations rapides sans quitter l'environnement de développement.
 > supporté (voir [section 10 — Option A](#10--développer-le-plugin)). Le recours aux LLM est
 > une facilité, pas une obligation.
 
+L'idée principale de ce repository GitHub est de servir de **bibliothèque de plugins** :
+un monorepo unique qui regroupe l'ensemble des plugins de visualisation développés. Cela
+permet de mutualiser la configuration, les scripts et les dépendances. Il reste bien sûr
+possible de **forker** le repository pour isoler un plugin dans son propre dépôt (un repo
+par plugin) si les contraintes organisationnelles ou de déploiement l'exigent.
+
 ---
 
 ## 1 — Prérequis techniques
@@ -459,7 +465,6 @@ Génère les fichiers suivants pour le plugin :
 
 #### Workflow après génération
 
-
 1. Packager et tester dans Superset :
    ```bash
    yarn plugin:package plugins/<nom>
@@ -516,10 +521,10 @@ https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versio
 
 #### Exemples concrets
 
-| Plugin    | Version | URL jsDelivr                                                                                                    |
-| --------- | ------- | --------------------------------------------------------------------------------------------------------------- |
-| hello-world | 0.0.10 | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/hello-world/0.0.10/index.js` |
-| lgs-map   | 0.1.0  | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/lgs-map/0.1.0/index.js`     |
+| Plugin      | Version | URL jsDelivr                                                                                                     |
+| ----------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
+| hello-world | 0.0.10  | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/hello-world/0.0.10/index.js` |
+| lgs-map     | 0.1.0   | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/lgs-map/0.1.0/index.js`      |
 
 ### Étape 4 : Enregistrer le plugin dans Superset de production
 
@@ -530,10 +535,10 @@ La démarche est identique à la [section 8](#8--comment-définir-mon-plugin-dan
 2. Cliquer sur **+ Plugin**
 3. Remplir les champs :
 
-| Champ | Valeur                                                                                                           |
-| ----- | ---------------------------------------------------------------------------------------------------------------- |
-| Name  | `Mon Graphique`                                                                                                  |
-| Key   | `mon-graphique`                                                                                                  |
+| Champ | Valeur                                                                                                            |
+| ----- | ----------------------------------------------------------------------------------------------------------------- |
+| Name  | `Mon Graphique`                                                                                                   |
+| Key   | `mon-graphique`                                                                                                   |
 | URL   | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/mon-graphique/0.1.0/index.js` |
 
 4. Sauvegarder
