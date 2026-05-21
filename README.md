@@ -154,11 +154,12 @@ cosmotech-viz-plugins/
 
 ## Documentation
 
-| Document                                               | Contenu                                          |
-| ------------------------------------------------------ | ------------------------------------------------ |
-| [docs/PROJECT-OVERVIEW.md](docs/PROJECT-OVERVIEW.md)   | Architecture, stack, flux CI/CD                  |
-| [docs/DEVELOPER-JOURNEY.md](docs/DEVELOPER-JOURNEY.md) | Onboarding complet, créer un plugin, conventions |
-| [docs/AGENT-CONTEXT.md](docs/AGENT-CONTEXT.md)         | Contraintes techniques, détail des scripts       |
+| Document                                                       | Contenu                                          |
+| -------------------------------------------------------------- | ------------------------------------------------ |
+| [docs/PROJECT-OVERVIEW.md](docs/PROJECT-OVERVIEW.md)           | Architecture, stack, flux CI/CD                  |
+| [docs/DEVELOPER-JOURNEY.md](docs/DEVELOPER-JOURNEY.md)         | Onboarding complet, créer un plugin, conventions |
+| [docs/AGENT-CONTEXT.md](docs/AGENT-CONTEXT.md)                 | Contraintes techniques, détail des scripts       |
+| [docs/HOW-TO-BUILD-A-PLUGIN.md](docs/HOW-TO-BUILD-A-PLUGIN.md) | Tutoriel de création de plugin Superset          |
 
 ---
 
