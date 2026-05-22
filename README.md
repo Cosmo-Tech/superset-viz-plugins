@@ -11,6 +11,12 @@ Superset sans nécessiter de rebuild.
 
 ---
 
+> **Note** : le développement manuel classique des plugins reste parfaitement possible et
+> supporté (voir [section 10 — Option A](#10--développer-le-plugin)). Le recours aux LLM est
+> une facilité, pas une obligation.
+> Le projet est actuellement compatible et testé avec la version 6.0.0 de Superset.
+> Il n'est pas compatible avec la version 6.1.0 de Superset.
+
 ## Prérequis
 
 | Outil   | Version minimale | Installation                     |
