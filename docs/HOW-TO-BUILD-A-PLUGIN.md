@@ -1,7 +1,7 @@
 # Comment construire un plugin Superset
 
 Guide pas-à-pas pour créer, développer, packager et intégrer un plugin de visualisation
-dans une instance Apache Superset locale.
+dans une instance Apache Superset.
 
 ---
 
