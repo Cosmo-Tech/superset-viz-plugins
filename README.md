@@ -7,7 +7,7 @@ bundle webpack autonome versionné, servi par un serveur HTTP et chargé à la v
 Superset sans nécessiter de rebuild.
 
 > Documentation complète dans le dossier [`docs/`](docs/) :
-> [Vue d'ensemble](docs/PROJECT-OVERVIEW.md) · [Parcours développeur](docs/DEVELOPER-JOURNEY.md) · [Contexte agent IA](docs/AGENT-CONTEXT.md)
+> [Vue d'ensemble](docs/PROJECT-OVERVIEW.md) · [Parcours développeur](docs/DEVELOPER-JOURNEY.md) · [Parcours utilisateur](docs/HOW-TO-BUILD-A-PLUGIN.md) · [Contexte agent IA](docs/AGENT-CONTEXT.md)
 
 ---
 
