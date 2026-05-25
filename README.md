@@ -11,7 +11,7 @@ Superset sans nécessiter de rebuild.
 
 ---
 
-> **Note** : 
+> **Note** :
 > Le projet est actuellement compatible et testé avec la version 6.0.0 de Superset.
 > Il n'est pas compatible avec la version 6.1.0 de Superset.
 
