@@ -1,4 +1,4 @@
-# @cosmotech/plugin-organizational-chart
+# @cosmotech/superset-plugin-organizational-chart
 
 Plugin de visualisation hiérarchique pour Apache Superset.
 Affiche un arbre de KPI sous forme de boîtes colorées connectées, conçu pour le suivi
@@ -99,13 +99,13 @@ La requête SQL renvoie **une seule ligne** contenant toutes les colonnes néces
 
 ```bash
 # Build (CJS + ESM + types)
-yarn workspace @cosmotech/plugin-organizational-chart build
+yarn workspace @cosmotech/superset-plugin-organizational-chart build
 
 # Tests unitaires
-yarn workspace @cosmotech/plugin-organizational-chart test
+yarn workspace @cosmotech/superset-plugin-organizational-chart test
 
 # Lint
-yarn workspace @cosmotech/plugin-organizational-chart lint
+yarn workspace @cosmotech/superset-plugin-organizational-chart lint
 
 # Packaging webpack (bundle autonome pour chargement dynamique)
 yarn plugin:package plugins/organizational-chart

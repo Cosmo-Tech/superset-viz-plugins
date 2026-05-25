@@ -71,8 +71,8 @@ docker compose version
 Cloner le dépôt et installer les dépendances :
 
 ```bash
-git clone git@github.com:Cosmo-Tech/cosmotech-viz-plugins.git
-cd cosmotech-viz-plugins
+git clone git@github.com:Cosmo-Tech/superset-viz-plugins.git
+cd superset-viz-plugins
 yarn install
 ```
 
@@ -122,9 +122,9 @@ plugins/mon-graphique/
 
 ```bash
 yarn install                                           # détecte le nouveau workspace
-yarn workspace @cosmotech/plugin-mon-graphique build   # build
-yarn workspace @cosmotech/plugin-mon-graphique test    # tests
-yarn workspace @cosmotech/plugin-mon-graphique lint    # lint
+yarn workspace @cosmotech/superset-plugin-mon-graphique build   # build
+yarn workspace @cosmotech/superset-plugin-mon-graphique test    # tests
+yarn workspace @cosmotech/superset-plugin-mon-graphique lint    # lint
 ```
 
 ---
@@ -412,7 +412,7 @@ projet.
 #### Template de prompt
 
 ```
-Je travaille dans le monorepo cosmotech-viz-plugins qui développe des plugins de
+Je travaille dans le monorepo superset-viz-plugins qui développe des plugins de
 visualisation pour Apache Superset 6.0.0.
 
 Contexte technique du projet :
@@ -516,15 +516,15 @@ https://cdn.jsdelivr.net/gh/<org>/<repo>@<branche>/<chemin-vers-le-fichier>
 Pour ce monorepo, l'URL d'un plugin est :
 
 ```
-https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/<nom>/<version>/index.js
+https://cdn.jsdelivr.net/gh/Cosmo-Tech/superset-viz-plugins@main/plugins/versions/<nom>/<version>/index.js
 ```
 
 #### Exemples concrets
 
-| Plugin      | Version | URL jsDelivr                                                                                                     |
-| ----------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
-| hello-world | 0.0.10  | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/hello-world/0.0.10/index.js` |
-| lgs-map     | 0.1.0   | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/lgs-map/0.1.0/index.js`      |
+| Plugin      | Version | URL jsDelivr                                                                                                    |
+| ----------- | ------- | --------------------------------------------------------------------------------------------------------------- |
+| hello-world | 0.0.10  | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/superset-viz-plugins@main/plugins/versions/hello-world/0.0.10/index.js` |
+| lgs-map     | 0.1.0   | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/superset-viz-plugins@main/plugins/versions/lgs-map/0.1.0/index.js`      |
 
 ### Étape 4 : Enregistrer le plugin dans Superset de production
 
@@ -535,11 +535,11 @@ La démarche est identique à la [section 8](#8--comment-définir-mon-plugin-dan
 2. Cliquer sur **+ Plugin**
 3. Remplir les champs :
 
-| Champ | Valeur                                                                                                            |
-| ----- | ----------------------------------------------------------------------------------------------------------------- |
-| Name  | `Mon Graphique`                                                                                                   |
-| Key   | `mon-graphique`                                                                                                   |
-| URL   | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/mon-graphique/0.1.0/index.js` |
+| Champ | Valeur                                                                                                           |
+| ----- | ---------------------------------------------------------------------------------------------------------------- |
+| Name  | `Mon Graphique`                                                                                                  |
+| Key   | `mon-graphique`                                                                                                  |
+| URL   | `https://cdn.jsdelivr.net/gh/Cosmo-Tech/superset-viz-plugins@main/plugins/versions/mon-graphique/0.1.0/index.js` |
 
 4. Sauvegarder
 
@@ -558,4 +558,4 @@ La démarche est identique à la [section 8](#8--comment-définir-mon-plugin-dan
 
 > **Note** : jsDelivr met en cache les fichiers. Après un push, le nouveau fichier est
 > généralement disponible sous quelques minutes. Pour forcer le rafraîchissement du cache,
-> utiliser l'URL de purge : `https://purge.jsdelivr.net/gh/Cosmo-Tech/cosmotech-viz-plugins@main/plugins/versions/<nom>/<version>/index.js`
+> utiliser l'URL de purge : `https://purge.jsdelivr.net/gh/Cosmo-Tech/superset-viz-plugins@main/plugins/versions/<nom>/<version>/index.js`

@@ -1,5 +1,5 @@
 {
-  "name": "@cosmotech/plugin-organizational-chart",
-  "key": "@cosmotech/plugin-organizational-chart",
+  "name": "@cosmotech/superset-plugin-organizational-chart",
+  "key": "@cosmotech/superset-plugin-organizational-chart",
   "bundle": "dist/index.js"
 }

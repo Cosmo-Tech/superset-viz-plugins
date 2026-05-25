@@ -1,4 +1,4 @@
-# Agent context — cosmotech-viz-plugins
+# Agent context — superset-viz-plugins
 
 ## Repository overview
 
@@ -17,7 +17,7 @@ npm package (TypeScript + React 19) published under the `@cosmotech/` scope.
 ## Repository structure
 
 ```
-cosmotech-viz-plugins/
+superset-viz-plugins/
 ├── plugins/                          ← One subfolder = one independent plugin npm package
 │   └── <plugin-name>/
 │       ├── package.json              ← Must include "pluginName" field (used by CI scripts)
@@ -147,8 +147,8 @@ is also renamed to `<ClassName>.tsx`.
 
 ```bash
 yarn install   # picks up the new workspace
-yarn workspace @cosmotech/plugin-<name> build
-yarn workspace @cosmotech/plugin-<name> test
+yarn workspace @cosmotech/superset-plugin-<name> build
+yarn workspace @cosmotech/superset-plugin-<name> test
 ```
 
 ### `scripts/initPlugin.js` — implementation notes
@@ -205,7 +205,7 @@ yarn plugin:pipeline plugins/hello-world --suffix beta
 
 Steps:
 
-1. Reads `package.json` to derive the lerna scope (`@cosmotech/plugin-<name>`)
+1. Reads `package.json` to derive the lerna scope (`@cosmotech/superset-plugin-<name>`)
 2. `lerna run lint --scope=<name>`
 3. `lerna run test --scope=<name>`
 4. `lerna run build --scope=<name>`
@@ -312,7 +312,7 @@ node scripts/build_plugin.js plugins/hello-world --suffix beta   # → plugins/v
 
 ```json
 {
-  "name": "@cosmotech/plugin-<name>",
+  "name": "@cosmotech/superset-plugin-<name>",
   "version": "0.1.0",
   "pluginName": "<PascalCase>ChartPlugin",
   "main": "dist/index.js",
@@ -397,7 +397,7 @@ The `pluginName` field in package.json is no longer used by `scripts/generatePre
 
 ```js
 module.exports = {
-  displayName: '@cosmotech/plugin-<name>',
+  displayName: '@cosmotech/superset-plugin-<name>',
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { rootMode: 'upward' }],

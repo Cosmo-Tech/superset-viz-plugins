@@ -1,4 +1,4 @@
-# @cosmotech/plugin-hello-world
+# @cosmotech/superset-plugin-hello-world
 
 Plugin de démonstration pour Apache Superset. Affiche un titre « Hello World » avec un emoji
 et un tableau des données retournées par la requête SQL configurée.
@@ -58,13 +58,13 @@ plugins/hello-world/
 
 ```bash
 # Build (CJS + ESM + types)
-yarn workspace @cosmotech/plugin-hello-world build
+yarn workspace @cosmotech/superset-plugin-hello-world build
 
 # Tests unitaires
-yarn workspace @cosmotech/plugin-hello-world test
+yarn workspace @cosmotech/superset-plugin-hello-world test
 
 # Lint
-yarn workspace @cosmotech/plugin-hello-world lint
+yarn workspace @cosmotech/superset-plugin-hello-world lint
 
 # Packaging webpack (bundle autonome pour chargement dynamique)
 yarn plugin:package plugins/hello-world

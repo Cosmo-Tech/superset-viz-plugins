@@ -1,5 +1,5 @@
 {
-  "name": "@cosmotech/cosmotech-viz-plugins",
+  "name": "@cosmotech/superset-viz-plugins",
   "version": "0.0.1",
   "description": "Monorepo de plugins de visualisation custom pour Apache Superset",
   "private": true,
@@ -70,7 +70,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Cosmo-Tech/cosmotech-viz-plugins.git"
+    "url": "git+https://github.com/Cosmo-Tech/superset-viz-plugins.git"
   },
   "keywords": [
     "superset",
@@ -80,7 +80,7 @@
   "author": "jreynard-code",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Cosmo-Tech/cosmotech-viz-plugins/issues"
+    "url": "https://github.com/Cosmo-Tech/superset-viz-plugins/issues"
   },
-  "homepage": "https://github.com/Cosmo-Tech/cosmotech-viz-plugins#readme"
+  "homepage": "https://github.com/Cosmo-Tech/superset-viz-plugins#readme"
 }

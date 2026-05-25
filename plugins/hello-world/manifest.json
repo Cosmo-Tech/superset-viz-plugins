@@ -1,5 +1,5 @@
 {
-  "name": "@cosmotech/plugin-hello-world",
-  "key": "@cosmotech/plugin-hello-world",
+  "name": "@cosmotech/superset-plugin-hello-world",
+  "key": "@cosmotech/superset-plugin-hello-world",
   "bundle": "dist/index.js"
 }

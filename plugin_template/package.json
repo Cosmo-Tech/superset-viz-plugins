@@ -1,5 +1,5 @@
 {
-  "name": "@cosmotech/plugin-{{PACKAGE_NAME}}",
+  "name": "@cosmotech/superset-plugin-{{PACKAGE_NAME}}",
   "version": "0.1.0",
   "description": "{{DESCRIPTION}}",
   "pluginName": "{{PLUGIN_CLASS_NAME}}",

@@ -1,4 +1,4 @@
-# cosmotech-viz-plugins
+# superset-viz-plugins
 
 Monorepo de plugins de visualisation personnalisés pour [Apache Superset](https://superset.apache.org/).
 
@@ -28,8 +28,8 @@ Superset sans nécessiter de rebuild.
 ## Installation
 
 ```bash
-git clone git@github.com:Cosmo-Tech/cosmotech-viz-plugins.git
-cd cosmotech-viz-plugins
+git clone git@github.com:Cosmo-Tech/superset-viz-plugins.git
+cd superset-viz-plugins
 yarn install
 ```
 
@@ -54,9 +54,9 @@ yarn install
 Pour cibler un seul plugin :
 
 ```bash
-yarn workspace @cosmotech/plugin-<nom> build
-yarn workspace @cosmotech/plugin-<nom> test
-yarn workspace @cosmotech/plugin-<nom> lint
+yarn workspace @cosmotech/superset-plugin-<nom> build
+yarn workspace @cosmotech/superset-plugin-<nom> test
+yarn workspace @cosmotech/superset-plugin-<nom> lint
 ```
 
 ---
@@ -110,7 +110,7 @@ et peut être enregistré dans Superset via le menu **Settings → Plugins**.
 ## Structure du dépôt
 
 ```
-cosmotech-viz-plugins/
+superset-viz-plugins/
 ├── plugins/                  ← Un sous-dossier = un plugin npm indépendant
 │   ├── hello-world/          ← Plugin de démonstration
 │   └── organizational-chart/ ← Plugin d'arbre hiérarchique de KPI

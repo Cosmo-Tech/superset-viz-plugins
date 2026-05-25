@@ -179,14 +179,14 @@ async function main() {
   console.log(`
 ✓ Plugin scaffolded successfully!
 
-  Package : @cosmotech/plugin-${packageName}
+  Package : @cosmotech/superset-plugin-${packageName}
   Class   : ${className}Plugin
   Location: plugins/${packageName}/
 
 Next steps:
   yarn install
-  yarn workspace @cosmotech/plugin-${packageName} build
-  yarn workspace @cosmotech/plugin-${packageName} test
+  yarn workspace @cosmotech/superset-plugin-${packageName} build
+  yarn workspace @cosmotech/superset-plugin-${packageName} test
 `);
 }
 

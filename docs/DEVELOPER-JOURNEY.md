@@ -51,8 +51,8 @@ docker-compose version
 ### Cloner le monorepo de plugins
 
 ```bash
-git clone git@github.com:Cosmo-Tech/cosmotech-viz-plugins.git
-cd cosmotech-viz-plugins
+git clone git@github.com:Cosmo-Tech/superset-viz-plugins.git
+cd superset-viz-plugins
 yarn install
 ```
 
@@ -64,7 +64,7 @@ seule passe.
 ## 3 — Structure du monorepo
 
 ```
-cosmotech-viz-plugins/
+superset-viz-plugins/
 ├── plugins/                         ← Un sous-dossier = un plugin npm indépendant
 │   └── hello-world/                 ← Exemple de plugin de référence
 ├── plugin_template/                 ← Gabarit utilisé par `yarn plugin:init`
@@ -128,8 +128,8 @@ Toutes les commandes s'exécutent depuis la racine du monorepo.
 Pour cibler un seul package :
 
 ```bash
-yarn workspace @cosmotech/plugin-mon-graphique build
-yarn workspace @cosmotech/plugin-mon-graphique test
+yarn workspace @cosmotech/superset-plugin-mon-graphique build
+yarn workspace @cosmotech/superset-plugin-mon-graphique test
 ```
 
 ---
@@ -153,7 +153,7 @@ Display name (e.g. My Chart): Mon Graphique
 Description: Visualisation personnalisée de données
 ```
 
-- **Plugin name** — identifiant kebab-case, devient le nom npm `@cosmotech/plugin-<nom>`
+- **Plugin name** — identifiant kebab-case, devient le nom npm `@cosmotech/superset-plugin-<nom>`
   et le nom du sous-dossier dans `plugins/`.
 - **Display name** — nom affiché dans l'interface Superset.
 - **Description** — description courte (readme, metadata).
@@ -281,7 +281,7 @@ de Superset.
 
 ```bash
 # Un seul plugin
-yarn workspace @cosmotech/plugin-mon-graphique build
+yarn workspace @cosmotech/superset-plugin-mon-graphique build
 
 # Tous les packages
 yarn build
@@ -313,7 +313,7 @@ Les tests utilisent **Jest** + **@testing-library/react**. Chaque package a son 
 
 ```bash
 # Un seul plugin
-yarn workspace @cosmotech/plugin-mon-graphique test
+yarn workspace @cosmotech/superset-plugin-mon-graphique test
 
 # Tous les packages
 yarn test

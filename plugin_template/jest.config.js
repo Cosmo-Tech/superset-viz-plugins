@@ -1,6 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  displayName: '@cosmotech/plugin-{{PACKAGE_NAME}}',
+  displayName: '@cosmotech/superset-plugin-{{PACKAGE_NAME}}',
   testEnvironment: 'jsdom',
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': ['babel-jest', { rootMode: 'upward' }],

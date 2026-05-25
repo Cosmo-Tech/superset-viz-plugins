@@ -11,7 +11,7 @@ Il permet à des équipes qui opèrent leur propre instance Superset d'**ajouter
 ## Architecture générale
 
 ```
-cosmotech-viz-plugins/
+superset-viz-plugins/
 ├── plugins/                  ← Chaque sous-dossier est un plugin npm indépendant
 │   └── hello-world/
 ├── plugin_template/          ← Gabarit de plugin (utilisé par `yarn plugin:init`)
@@ -105,7 +105,7 @@ remplacés dans tous les fichiers. Il suffit ensuite de :
 
 ```bash
 yarn install
-yarn workspace @cosmotech/plugin-mon-graphique build
+yarn workspace @cosmotech/superset-plugin-mon-graphique build
 ```
 
 ---
